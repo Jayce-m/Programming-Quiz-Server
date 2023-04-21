@@ -4,24 +4,7 @@ from urllib.parse import urlparse, parse_qs
 import json
 import random, string, datetime
 
-landing = """
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Login</title>
-    </head>
-    <body>
-        <form method="post" action="/login">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username"><br><br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password"><br><br>
-            <input type="submit" value="Submit">
-        </form>
-    </body>
-</html>
-"""
+landing = open('TM/index.html', 'r').read()
 
 testpage = """
 <html>
@@ -72,6 +55,7 @@ class TestManager(BaseHTTPRequestHandler):
         self.end_headers()
         
         self.wfile.write(bytes(landing, 'utf-8'))
+        
 
     def do_POST(self):
         if(self.path == '/logout'):
@@ -95,6 +79,7 @@ class TestManager(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
+            
             self.wfile.write(bytes(landing, 'utf-8'))
             return
         if self.path == '/login':
@@ -144,7 +129,7 @@ class TestManager(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     try:
-        server_address = ('172.20.10.5', 8000)
+        server_address = ('', 8000)
         httpd = HTTPServer(server_address, TestManager)
         httpd.serve_forever()
     except KeyboardInterrupt:
