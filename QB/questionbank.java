@@ -4,11 +4,14 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-public class QuestionBank{
+public class questionbank{
 
     public static void main(String[] args) {
-        try (JsonReader reader = Json.createReader(new FileReader("data.json"))) {
+        try (JsonReader reader = Json.createReader(new FileReader("questions.json"))) {
             JsonObject jsonObj = reader.readObject();
+
+            
+            /* 
             String name = jsonObj.getString("name");
             int age = jsonObj.getInt("age");
             boolean isMarried = jsonObj.getBoolean("isMarried");
@@ -19,6 +22,7 @@ public class QuestionBank{
         } catch (Exception e) {
             e.printStackTrace();
         }
+        */
     }
 
 }
