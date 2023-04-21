@@ -12,9 +12,9 @@ def genSessionID():
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(32))
 
 
-def serveTest(httpd, username, fullName, questionNum, curAttempt):
+def serveTest(httpd, username, fullName, questionNum, curAttempt,curMarks):
     testpage = open('TM/test.html', 'r').read()
-    httpd.wfile.write(bytes(testpage % (fullName,username,questionNum,curAttempt), 'utf-8'))
+    httpd.wfile.write(bytes(testpage % (fullName,username,questionNum,curAttempt,curMarks), 'utf-8'))
 class TestManager(BaseHTTPRequestHandler):
     def do_GET(self):
         #Check if the user has logged in before
@@ -31,12 +31,13 @@ class TestManager(BaseHTTPRequestHandler):
                                 fullName = data[user]['fullname']
                                 questionNum = data[user]['question']
                                 curAttempt = data[user]['attempt']
+                                curMarks = data[user]['marks']
 
                                 #Serve test
                                 self.send_response(200)
                                 self.send_header('Content-type', 'text/html')
                                 self.end_headers()
-                                serveTest(self, user, fullName, questionNum, curAttempt)
+                                serveTest(self, user, fullName, questionNum, curAttempt,curMarks)
                                 return
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
@@ -102,9 +103,10 @@ class TestManager(BaseHTTPRequestHandler):
                         fullName = data[username]['fullname']
                         questionNum = data[username]['question']
                         curAttempt = data[username]['attempt']
+                        curMarks = data[username]['marks']
 
                         #Serve HTML page
-                        serveTest(self, username, fullName, questionNum, curAttempt)
+                        serveTest(self, username, fullName, questionNum, curAttempt,curMarks)
                     else:
                         self.send_response(401)
                         self.send_header('Content-type', 'text/html')
