@@ -4,28 +4,16 @@ from urllib.parse import urlparse, parse_qs
 import json
 import random, string, datetime
 
-landing = open('TM/index.html', 'r').read()
+landing = open('TM/landing.html', 'r').read()
 
-testpage = """
-<html>
-   <head>
-      <style>logoutLblPos{position:fixed;right:10px;top:5px;}</style>
-      <title>Test Manager</title>
-   </head>
-   <body>
-      <h1>Test Manager</h1>
-      <h2>Welcome, %s (ID: %s)!</h2>
-      <h3> You are on question %s (attempt %s) out of 10</h3>
-      <form align='right' name='form1' method='post' action='logout'><label class='logoutLblPos'><input name='submit2' type='submit' id='submit2' value='log out'></label></form>
-      <body>
-         <html>
-         """
+testpage = open('TM/test.html', 'r').read()
 
 def genSessionID():
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(32))
 
 
 def serveTest(httpd, username, fullName, questionNum, curAttempt):
+    testpage = open('TM/test.html', 'r').read()
     httpd.wfile.write(bytes(testpage % (fullName,username,questionNum,curAttempt), 'utf-8'))
 class TestManager(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -53,7 +41,8 @@ class TestManager(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
-        
+
+        landing = open('TM/landing.html', 'r').read()
         self.wfile.write(bytes(landing, 'utf-8'))
         
 
@@ -79,6 +68,7 @@ class TestManager(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             
+            landing = open('TM/landing.html', 'r').read()
             self.wfile.write(bytes(landing, 'utf-8'))
             return
         if self.path == '/login':
