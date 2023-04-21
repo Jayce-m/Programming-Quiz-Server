@@ -13,8 +13,13 @@ def genSessionID():
 
 
 def serveTest(httpd, username, fullName, questionNum, curAttempt,curMarks):
+    question = "Test test test test?"
+    choice1 = "test"
+    choice2 = "test"
+    choice3 = "test"
+    choice4 = "test"
     testpage = open('TM/test.html', 'r').read()
-    httpd.wfile.write(bytes(testpage % (fullName,username,questionNum,curAttempt,curMarks), 'utf-8'))
+    httpd.wfile.write(bytes(testpage % (fullName,username,questionNum,curAttempt,curMarks,questionNum,question,choice1,choice2,choice3,choice4), 'utf-8'))
 class TestManager(BaseHTTPRequestHandler):
     def do_GET(self):
         #Check if the user has logged in before
