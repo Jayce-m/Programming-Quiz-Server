@@ -144,7 +144,7 @@
       "answer": "delete()"
     },
     {
-      "id": 7,
+      "id": 12,
       "language": "Python",
       "multiple": true,
       "question": "Which of the following statements is true about Python sets?",
@@ -155,7 +155,7 @@
       "Sets can be used as keys in dictionaries"
       ],
       "answer": "Sets can be used as keys in dictionaries"
-    },
+    }
     
 
 
