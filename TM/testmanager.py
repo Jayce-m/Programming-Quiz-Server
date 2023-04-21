@@ -60,7 +60,6 @@ class TestManager(BaseHTTPRequestHandler):
     def do_POST(self):
         if(self.path == '/logout'):
             #Get session ID
-            print("yepp")
             cookie = self.headers.get('Cookie')
             for c in cookie.split(';'):
                 name, value = c.strip().split('=')
