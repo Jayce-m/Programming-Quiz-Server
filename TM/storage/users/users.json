@@ -1,3 +1,4 @@
 {
-    "23098648": {"password": "12456", "question": 1, "attempt": 1}
+    "23098648": {"fullname": "Elijah T","password": "12456", "question": 1, "attempt": 1,"marks": 0},
+    "test": {"fullname": "John Doe", "password": "test", "question": 1, "attempt": 1,"marks": 0}
 }
