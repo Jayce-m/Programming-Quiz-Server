@@ -4,7 +4,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-public class QuestionBank{
+public class questionbank{
 
     public static void main(String[] args) {
         try (JsonReader reader = Json.createReader(new FileReader("data.json"))) {
