@@ -41,16 +41,16 @@
     },
     {
       "id": 4,
-      "language": "C",
+      "language": "Java",
       "multiple": true,
-      "question": "What is the output of the following C code?\n\n#include <stdio.h>\n\nint main() {\n    int a = 5, b = 7;\n    printf(\"%d\\n\", a++ * b--);\n    return 0;\n}",
+      "question": "Which of the following is a valid way to declare and initialize a string in Java?",
       "options": [
-        "30",
-        "35",
-        "40",
-        "42"
+        "String str = 'Hello';",
+        "String str = new String('Hello');",
+        "Both A and B",
+        "None of the above"
       ],
-      "answer": "35"
+      "answer": "None of the above"
     },
     {
       "id": 5,
@@ -80,16 +80,16 @@
     },
     {
       "id": 7,
-      "language": "C",
+      "language": "Java",
       "multiple": true,
-      "question": "Which of the following is not a logical operator in C?",
+      "question": "Which of the following is a method used to check if two strings are equal in Java?",
       "options": [
-        "&&",
-        "||",
-        "!",
-        "^"
+        "equals()",
+        "compareTo()",
+        "contains()",
+        "substring()"
       ],
-      "answer": "^"
+      "answer": "equals()"
     },
     {
       "id": 8,
@@ -103,6 +103,61 @@
         "Error"
       ],
       "answer": "3"
-    }
+    },
+    {
+      "id": 9,
+      "language": "Java",
+      "multiple": true,
+      "question": "Which of the following is a method used to find the index of a substring in a string in Java?",
+      "options": [
+      "indexOf()",
+      "lastIndexOf()",
+      "substring()",
+      "replace()"
+      ],
+      "answer": "indexOf()"
+    },
+    {
+      "id": 10,
+      "language": "Java",
+      "multiple": true,
+      "question": "Which of the following is a method used to convert a string to uppercase in Java?",
+      "options": [
+      "toUpperCase()",
+      "toLowerCase()",
+      "concat()",
+      "replace()"
+      ],
+      "answer": "toUpperCase()"
+    },
+    {
+      "id": 11,
+      "language": "Python",
+      "multiple": true,
+      "question": "Which of the following is not a valid method for removing an element from a list in Python?",
+      "options": [
+      "remove()",
+      "delete()",
+      "pop()",
+      "clear()"
+      ],
+      "answer": "delete()"
+    },
+    {
+      "id": 7,
+      "language": "Python",
+      "multiple": true,
+      "question": "Which of the following statements is true about Python sets?",
+      "options": [
+      "Sets are ordered",
+      "Sets can contain duplicate elements",
+      "Sets are mutable",
+      "Sets can be used as keys in dictionaries"
+      ],
+      "answer": "Sets can be used as keys in dictionaries"
+    },
+    
+
+
   ]
 }
