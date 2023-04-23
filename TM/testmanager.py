@@ -2,7 +2,9 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import http.cookies
 from urllib.parse import urlparse, parse_qs
 import json
-import random, string, datetime
+import random
+import string
+import datetime
 
 landing = """
 <!DOCTYPE html>
@@ -38,15 +40,19 @@ testpage = """
          <html>
          """
 
+
 def genSessionID():
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(32))
 
 
 def serveTest(httpd, username, fullName, questionNum, curAttempt):
-    httpd.wfile.write(bytes(testpage % (fullName,username,questionNum,curAttempt), 'utf-8'))
+    httpd.wfile.write(
+        bytes(testpage % (fullName, username, questionNum, curAttempt), 'utf-8'))
+
+
 class TestManager(BaseHTTPRequestHandler):
     def do_GET(self):
-        #Check if the user has logged in before
+        # Check if the user has logged in before
         cookie = self.headers.get('Cookie')
         if cookie:
             for c in cookie.split(';'):
@@ -56,26 +62,27 @@ class TestManager(BaseHTTPRequestHandler):
                     with open('TM/storage/users/users.json') as json_file:
                         data = json.load(json_file)
                         for user in data:
-                            if(data[user]['session-id'] == session_id):
+                            if (data[user]['session-id'] == session_id):
                                 fullName = data[user]['fullname']
                                 questionNum = data[user]['question']
                                 curAttempt = data[user]['attempt']
 
-                                #Serve test
+                                # Serve test
                                 self.send_response(200)
                                 self.send_header('Content-type', 'text/html')
                                 self.end_headers()
-                                serveTest(self, user, fullName, questionNum, curAttempt)
+                                serveTest(self, user, fullName,
+                                          questionNum, curAttempt)
                                 return
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
-        
+
         self.wfile.write(bytes(landing, 'utf-8'))
 
     def do_POST(self):
-        if(self.path == '/logout'):
-            #Get session ID
+        if (self.path == '/logout'):
+            # Get session ID
             print("yepp")
             cookie = self.headers.get('Cookie')
             for c in cookie.split(';'):
@@ -85,13 +92,13 @@ class TestManager(BaseHTTPRequestHandler):
                     with open('TM/storage/users/users.json') as json_file:
                         data = json.load(json_file)
                         for user in data:
-                            if(data[user]['session-id'] == session_id):
-                                #Remove session ID
+                            if (data[user]['session-id'] == session_id):
+                                # Remove session ID
                                 data[user]['session-id'] = ''
                                 with open('TM/storage/users/users.json', 'w') as outfile:
                                     json.dump(data, outfile, indent=4)
                                 break
-            #Serve landing page
+            # Serve landing page
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
@@ -103,25 +110,27 @@ class TestManager(BaseHTTPRequestHandler):
             data_dict = parse_qs(post_data)
             username = data_dict['username'][0]
             password = data_dict['password'][0]
-    
+
             with open('TM/storage/users/users.json') as json_file:
                 data = json.load(json_file)
-                if(username in data):
-                    if(password == data[username]['password']):
-                        #Generate Session ID
+                if (username in data):
+                    if (password == data[username]['password']):
+                        # Generate Session ID
                         sessionid = genSessionID()
                         cookie = http.cookies.SimpleCookie()
                         cookie['session-id'] = sessionid
                         expires = datetime.datetime.utcnow() + datetime.timedelta(days=1)
-                        cookie['session-id']['expires'] = expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT")
-                    
-                        #Send HTTP headers and response
+                        cookie['session-id']['expires'] = expires.strftime(
+                            "%a, %d-%b-%Y %H:%M:%S GMT")
+
+                        # Send HTTP headers and response
                         self.send_response(200)
                         self.send_header('Content-type', 'text/html')
-                        self.send_header('Set-Cookie', cookie.output(header=''))
+                        self.send_header(
+                            'Set-Cookie', cookie.output(header=''))
                         self.end_headers()
 
-                        #Retrieve relevant information and store session ID in json
+                        # Retrieve relevant information and store session ID in json
                         data[username]['session-id'] = sessionid
                         with open('TM/storage/users/users.json', 'w') as outfile:
                             json.dump(data, outfile, indent=4)
@@ -129,8 +138,9 @@ class TestManager(BaseHTTPRequestHandler):
                         questionNum = data[username]['question']
                         curAttempt = data[username]['attempt']
 
-                        #Serve HTML page
-                        serveTest(self, username, fullName, questionNum, curAttempt)
+                        # Serve HTML page
+                        serveTest(self, username, fullName,
+                                  questionNum, curAttempt)
                     else:
                         self.send_response(401)
                         self.send_header('Content-type', 'text/html')
@@ -142,9 +152,10 @@ class TestManager(BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(bytes("User not found!", 'utf-8'))
 
+
 if __name__ == '__main__':
     try:
-        server_address = ('172.20.10.5', 8000)
+        server_address = ('192.168.0.9', 8000)
         httpd = HTTPServer(server_address, TestManager)
         httpd.serve_forever()
     except KeyboardInterrupt:
