@@ -204,6 +204,8 @@ public class QuestionBank {
       // user
       String requestType = requestArray[1];
       String userID = requestArray[0];
+      String QuestionID = requestArray[2];
+      String attemptsMade = requestArray[3];
 
       switch (requestType) {
         case "requestQuestions":
