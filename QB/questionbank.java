@@ -1,27 +1,78 @@
+
 import java.io.*;
 import java.net.*;
+import org.json.*;
+import java.util.Random;
 
 // 22/04/2023
 // Laid out a skeleton of how everythings going to work'
 
 public class QuestionBank {
 
-  public synchronized void generateQuestions(String UserName) throws Exception {
+  public synchronized void generateQuestions(String userName) throws Exception {
     // This generates the 10 questions to send to the TM
     // It also includes the possible answers and the question ID
 
     // Generate JSON file for the user requesting the 10 questions
     // The file will be generated in the storage/usersQuestions section of the QB
-    System.out.println(System.getProperty("user.dir"));
-    String workingDir = System.getProperty("user.dir") + "/storage/usersQuestions/";
-    File file = new File(workingDir + UserName + ".json");
-    System.out.println("file created");
+    // Ensure you are in the cits3002-proj directory when compiling so that the
+    // files are retreived from the right path
+
+    File file = new File("QB/storage/usersQuestions/" + userName + ".json");
     boolean created = file.createNewFile();
 
+    // Get questions from Questions.json and add to the users json file
+    FileReader reader = new FileReader(System.getProperty("user.dir") + "/QB/storage/questions/questions.json");
+    JSONTokener tokener = new JSONTokener(reader);
+
+    // Create a JSON array from the JSONTokener object
+    JSONArray allQuestionsJsonArray = new JSONArray(tokener);
+    JSONArray usersQuestions = new JSONArray();
+    boolean inArrayAlready = false;
+
+    for (int i = 0; i < 10; i++) {
+      inArrayAlready = false;
+      Random rand = new Random();
+      int randomNumber = rand.nextInt(allQuestionsJsonArray.length());
+      for (int j = 0; j < usersQuestions.length(); j++) {
+        if (usersQuestions.get(j).equals(allQuestionsJsonArray.get(randomNumber))) {
+          inArrayAlready = true;
+        }
+      }
+      if (!(inArrayAlready)) {
+        usersQuestions.put(allQuestionsJsonArray.get(randomNumber));
+      }
+    }
+
+    FileWriter fileWriter = new FileWriter("QB/storage/usersQuestions/" + userName + ".json");
+    BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+    bufferedWriter.write(usersQuestions.toString());
+    bufferedWriter.close();
   }
 
-  public synchronized void sendQuestionsToTM() {
+  public synchronized void sendQuestionsToTM(Socket clientSocket, String userName) throws Exception {
     // uses sockets to send questions to task manager
+    FileInputStream fileInput = new FileInputStream("QB/storage/usersQuestions/" + userName + ".json");
+
+    byte[] buffer = new byte[4096];
+    int bytesRead = 0;
+
+    // Create an OutputStream object to send data to the client
+    OutputStream out = clientSocket.getOutputStream();
+
+    // Read the file and send its contents to the client
+    while ((bytesRead = fileInput.read(buffer)) != -1) {
+      out.write(buffer, 0, bytesRead);
+    }
+
+    System.out.println("\033[32mQuestions sent to: " + clientSocket.getInetAddress() + "\033[0m\n");
+
+    // Close the FileInputStream and OutputStream
+    out.close();
+    fileInput.close();
+
+    // Close the socket
+    clientSocket.close();
   }
 
   public synchronized void markMultipleChoiceQuestion() {
@@ -40,22 +91,23 @@ public class QuestionBank {
     // Create an instance of QB to receive
     QuestionBank questionSender = new QuestionBank();
     QuestionBank questionMarker = new QuestionBank();
+    // questionSender.generateQuestions("jalil");
 
     // get the address of the host and set a port to commmunicate on
     InetAddress address = InetAddress.getLocalHost();
     int port = 8000;
-    System.out.println("Your address: " + address);
+    System.out.println("\n\033[32mYour address: " + address + "\033[0m\n");
 
     // Create a ServerSocket to communicate with TM
 
     ServerSocket serverSocket = new ServerSocket(port, 50, address);
-    System.out.println("Server started");
+    System.out.println("\033[32mServer Started...\033[0m\n");
 
     while (true) {
 
       // Wait for client to connect and create a Socket object when client connects
       Socket clientSocket = serverSocket.accept();
-      System.out.println("Client connected: " + clientSocket.getInetAddress());
+      System.out.println("\033[34mClient connected: " + clientSocket.getInetAddress() + "\033[0m\n");
 
       // Read in client's request
       InputStream inputStream = clientSocket.getInputStream();
@@ -63,7 +115,7 @@ public class QuestionBank {
       int length = inputStream.read(buffer);
 
       String request = new String(buffer, 0, length);
-      System.out.println("Request received: " + request);
+      System.out.println("\033[34mRequest received: " + request + "\033[0m\n");
 
       // Respond accordingly
       // For a request for questions the request should be in the format: "<UserID>
@@ -78,21 +130,25 @@ public class QuestionBank {
       // If request is for questions
       // We need the userID so we can generate the 10 questions in a file for that
       // user
-      if (requestArray[1].equals("requestQuestions")) {
-        System.out.println("questions requested");
-        String userID = requestArray[0];
-        questionSender.generateQuestions(userID);
-        questionSender.sendQuestionsToTM();
-      } else if (requestArray[1].equals("requestMCQMarking")) {
-        // If request is to mark question
-        System.out.println("MCQ marking requested");
-        questionMarker.markMultipleChoiceQuestion();
-      } else if (requestArray[1].equals("requestPQMarking")) {
-        questionMarker.markProgrammingQuestion();
-      } else {
-        continue;
-      }
+      String requestType = requestArray[1];
+      String userID = requestArray[0];
 
+      switch (requestType) {
+        case "requestQuestions":
+          System.out.println("\033[34mQuestions requested\033[0m\n");
+          questionSender.generateQuestions(userID);
+          questionSender.sendQuestionsToTM(clientSocket, userID);
+          break;
+        case "requestMCQMarking":
+          System.out.println("MCQ marking requested");
+          questionMarker.markMultipleChoiceQuestion();
+          break;
+        case "requestPQMarking":
+          questionMarker.markProgrammingQuestion();
+          break;
+        default:
+          break;
+      }
     }
 
   }

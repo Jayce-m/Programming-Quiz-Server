@@ -1,0 +1,7 @@
+{
+  "java.dependency.packagePresentation": "flat",
+  "java.project.referencedLibraries": [
+    "lib/**/*.jar",
+    "/Users/jalilinayat-hussain/Downloads/json-20230227.jar"
+  ]
+}

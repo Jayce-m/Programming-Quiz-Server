@@ -1,0 +1,68 @@
+[
+  {
+    "question": "Which of the following is a valid way to declare a variable in Java?",
+    "answer": "int myVar = 5;",
+    "multiple": true,
+    "options": [
+      "int myVar = 5;",
+      "myVar int = 5;",
+      "int = myVar 5;",
+      "5 = int myVar;"
+    ],
+    "language": "Java",
+    "id": 3
+  },
+  {
+    "question": "Which of the following is not a data type in Python?",
+    "answer": "char",
+    "multiple": true,
+    "options": ["int", "float", "boolean", "char"],
+    "language": "Python",
+    "id": 2
+  },
+  {
+    "question": "Which of the following is not a logical operator in C?",
+    "answer": "^",
+    "multiple": true,
+    "options": ["&&", "||", "!", "^"],
+    "language": "C",
+    "id": 7
+  },
+  {
+    "question": "What is the correct syntax for declaring an array in C?",
+    "answer": "int[] array;",
+    "multiple": true,
+    "options": ["int array[];", "array int[];", "int[] array;", "array[] int;"],
+    "language": "C",
+    "id": 1
+  },
+  {
+    "question": "What is the output of the following C code?\n\n#include <stdio.h>\n\nint main() {\n    int a = 5, b = 7;\n    printf(\"%d\\n\", a++ * b--);\n    return 0;\n}",
+    "answer": "35",
+    "multiple": true,
+    "options": ["30", "35", "40", "42"],
+    "language": "C",
+    "id": 4
+  },
+  {
+    "question": "What is the output of the following Python code?\n\nx = [1, 2, 3]\ny = x\nx.append(4)\nprint(y)",
+    "answer": "[1, 2, 3, 4]",
+    "multiple": true,
+    "options": ["[1, 2, 3]", "[1, 2, 3, 4]", "[1, 2, 4]", "[1, 2, 4, 3]"],
+    "language": "Python",
+    "id": 5
+  },
+  {
+    "question": "Which of the following is a valid way to create a new object in Java?",
+    "answer": "MyClass myObj = new MyClass();",
+    "multiple": true,
+    "options": [
+      "MyClass myObj = new MyClass();",
+      "new MyClass() = myObj;",
+      "MyClass = new myObj();",
+      "MyClass myObj;"
+    ],
+    "language": "Java",
+    "id": 6
+  }
+]
