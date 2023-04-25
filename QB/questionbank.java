@@ -3,13 +3,15 @@ import java.io.*;
 import java.net.*;
 import org.json.*;
 import java.util.Random;
+import org.python.core.*;
+import org.python.util.*;
 
 // 22/04/2023
 // Laid out a skeleton of how everythings going to work'
 
 public class QuestionBank {
 
-  public synchronized void generateQuestions(String userName) throws Exception {
+  public void generateQuestions(String userName) throws Exception {
     // This generates the 10 questions to send to the TM
     // It also includes the possible answers and the question ID
 
@@ -50,7 +52,7 @@ public class QuestionBank {
     bufferedWriter.close();
   }
 
-  public synchronized void sendQuestionsToTM(Socket clientSocket, String userName) throws Exception {
+  public void sendQuestionsToTM(Socket clientSocket, String userName) throws Exception {
     // uses sockets to send questions to task manager
     FileInputStream fileInput = new FileInputStream("QB/storage/usersQuestions/" + userName + ".json");
 
@@ -75,14 +77,14 @@ public class QuestionBank {
     clientSocket.close();
   }
 
-  public synchronized void markMultipleChoiceQuestion() {
+  public void markMultipleChoiceQuestion() {
     // gets response from TM and checks if they got the question right
     // returns true or false
   }
 
-  public synchronized void markProgrammingQuestion() {
-    // This method compiles the answer given and compares it to the actual answer in
-    // the database
+  public void markProgrammingQuestion(String programmingLanguage, String code, String numberOfAttemptsString) {
+    PythonInterpreter interp = new PythonInterpreter();
+    interp.exec(code);
   }
 
   public static void main(String[] args) throws Exception {
@@ -91,7 +93,6 @@ public class QuestionBank {
     // Create an instance of QB to receive
     QuestionBank questionSender = new QuestionBank();
     QuestionBank questionMarker = new QuestionBank();
-    // questionSender.generateQuestions("jalil");
 
     // get the address of the host and set a port to commmunicate on
     InetAddress address = InetAddress.getLocalHost();
@@ -145,7 +146,7 @@ public class QuestionBank {
           questionMarker.markMultipleChoiceQuestion();
           break;
         case "requestPQMarking":
-          questionMarker.markProgrammingQuestion();
+          // questionMarker.markProgrammingQuestion();
           String language = requestArray[2];
           String[] array2 = request.split(language);
           String code = array2[1];
