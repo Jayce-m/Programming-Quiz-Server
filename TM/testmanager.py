@@ -12,14 +12,50 @@ def genSessionID():
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(32))
 
 
+def requestQuestions():
+    #TODO: request questions from the question bank
+    return
+
+
 def serveTest(httpd, username, fullName, questionNum, curAttempt,curMarks):
-    question = "Test test test test?"
-    choice1 = "test"
-    choice2 = "test"
-    choice3 = "test"
-    choice4 = "test"
-    testpage = open('TM/test.html', 'r').read()
-    httpd.wfile.write(bytes(testpage % (fullName,username,questionNum,curAttempt,curMarks,questionNum,question,choice1,choice2,choice3,choice4), 'utf-8'))
+
+    #call the request questions function
+    #requestQuestions()
+
+    # iterate over the questions json file inside storage
+    # get attributes of the question. i.e. multiple or programming
+    # if multiple choice, format the test page with the question and options
+    # if programming, format the test page with the question and the code editor
+
+    #iterate over the questions json file inside storage
+    #TODO: change the path to the username.json
+    with open('QB/questions/questions.json') as json_file:
+        
+        # Load the questions from the file
+        data = json.load(json_file)
+
+        # Get the current question
+        current_question = data['questions'][int(questionNum) - 1]
+        
+        # Get the options for the current question
+        options = current_question['options']
+
+        # Generate HTML code for options
+        options_html = ''
+        for option in options:
+            options_html += '<div class="form-check">'
+            options_html += '<input class="form-check-input" type="radio" name="answer" id="%s" value="%s">' % (option, option)
+            options_html += '<label class="form-check-label" for="%s">%s</label>' % (option, option)
+            options_html += '</div>'
+    
+    # Fill in placeholders in HTML document
+    html_doc = open('TM/test.html', 'r').read()
+    filled_doc = html_doc % (fullName, username, questionNum, curAttempt, curMarks, current_question['id'], current_question['question'], options_html, 'test', 'test', 'test', 'test')
+
+    # Send response to client
+    httpd.wfile.write(bytes(filled_doc, 'utf-8'))
+
+
 class TestManager(BaseHTTPRequestHandler):
     def do_GET(self):
         #Check if the user has logged in before
