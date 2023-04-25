@@ -56,15 +56,12 @@ public class QuestionBank {
     // userName, QuestionID, marksAwarded, and a message to indicate if they were correct/incorrect
     // or exceeded the number of attempts and therefore returns the expected answer  
     OutputStream mcqOut = clientSocket.getOutputStream();
-    mcqOut.write(userName.getBytes());
-    mcqOut.write(QuestionID.getBytes());
+    mcqOut.write((userName+QuestionID+marksAwarded+returnMessage).getBytes());
     if(correct){
       mcqOut.write("Correct".getBytes());
     }else{
       mcqOut.write("Incorrect".getBytes());
     }
-    mcqOut.write(marksAwarded.getBytes());
-    mcqOut.write(returnMessage.getBytes());
     mcqOut.flush();
     mcqOut.close();
     
@@ -149,31 +146,6 @@ public class QuestionBank {
       //marking: <userName>, <QuestionID>, <marksAwarded>, <returnMessage>
       String[] marking = new String[]{userName, QuestionID, marksAwarded, returnMessage}; 
       return marking;
-  }
-
-  public void sendQuestionsToTM(Socket clientSocket, String userName) throws Exception {
-    // uses sockets to send questions to task manager
-    FileInputStream fileInput = new FileInputStream("QB/storage/usersQuestions/" + userName + ".json");
-
-    byte[] buffer = new byte[4096];
-    int bytesRead = 0;
-
-    // Create an OutputStream object to send data to the client
-    OutputStream out = clientSocket.getOutputStream();
-
-    // Read the file and send its contents to the client
-    while ((bytesRead = fileInput.read(buffer)) != -1) {
-      out.write(buffer, 0, bytesRead);
-    }
-
-    System.out.println("\033[32mQuestions sent to: " + clientSocket.getInetAddress() + "\033[0m\n");
-
-    // Close the FileInputStream and OutputStream
-    out.close();
-    fileInput.close();
-
-    // Close the socket
-    clientSocket.close();
   }
 
   public void markProgrammingQuestion(String programmingLanguage, String code, String numberOfAttemptsString) {
