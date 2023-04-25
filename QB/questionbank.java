@@ -50,6 +50,28 @@ public class QuestionBank {
     bufferedWriter.close();
   }
 
+  public synchronized void sendMCQmarkingToTM(Socket clientSocket, Boolean correct, String userName, String QuestionID, String marksAwarded, String returnMessage) throws Exception {
+    // Creates an output stream and sends the current
+    // userName, QuestionID, marksAwarded, and a message to indicate if they were correct/incorrect
+    // or exceeded the number of attempts and therefore returns the expected answer  
+    OutputStream mcqOut = clientSocket.getOutputStream();
+    mcqOut.write(userName.getBytes());
+    mcqOut.write(QuestionID.getBytes());
+    if(correct){
+      mcqOut.write("Correct".getBytes());
+    }else{
+      mcqOut.write("Incorrect".getBytes());
+    }
+    mcqOut.write(marksAwarded.getBytes());
+    mcqOut.write(returnMessage.getBytes());
+    mcqOut.flush();
+    mcqOut.close();
+    
+    // Close the socket
+    clientSocket.close();
+
+  }
+
   public synchronized void sendQuestionsToTM(Socket clientSocket, String userName) throws Exception {
     // uses sockets to send questions to task manager
     FileInputStream fileInput = new FileInputStream("QB/storage/usersQuestions/" + userName + ".json");
@@ -75,9 +97,57 @@ public class QuestionBank {
     clientSocket.close();
   }
 
-  public synchronized void markMultipleChoiceQuestion() {
+  public synchronized String[] markMultipleChoiceQuestion(String userName, String QuestionID, String studentAnswer, String attempts) throws Exception {
     // gets response from TM and checks if they got the question right
     // returns true or false
+    
+    // Get questions from Questions.json and add to the users json file
+    FileReader reader = new FileReader(System.getProperty("user.dir") + "/QB/storage/questions/questions.json");
+    JSONTokener tokener = new JSONTokener(reader);
+
+    // Create a JSON array from the JSONTokener object
+    JSONArray allQuestionsJsonArray = new JSONArray(tokener);
+    //Retrieve the question to be marked from the questionbank using the QuestionID
+    int question = Integer.parseInt(QuestionID) - 1;                            //Question ID starts at 1;
+    JSONObject theQuestion = allQuestionsJsonArray.getJSONObject(question);     
+    String theAnswer = theQuestion.getString("answer");                     //find the corresponding answer
+
+    boolean correct = false;
+    if(studentAnswer == theAnswer){           //check if they were correct
+      correct = true;
+    } else correct = false;                   //add a return here that says they were wrong
+
+    String marksAwarded = "0";
+    String returnMessage = " ";
+    if(correct || attempts == "3"){           //once they're either correct or exceed attempt limit, award marks or send correct solution.
+      switch(attempts){
+        case "0":
+          marksAwarded = "3";
+          returnMessage = "Correct!";
+          break;
+        case "1":
+          marksAwarded = "2";
+          returnMessage = "Correct!";
+          break;
+        case "2":
+          marksAwarded = "1";
+          returnMessage = "Correct!";
+          break;
+        case "3":
+          marksAwarded = "0";
+          returnMessage = "Incorrect! The correct answer was: " + theAnswer;
+          break;
+          }
+      }else {
+        returnMessage = "Incorrect, try again!";
+      }
+
+      //put everything into a string array so that it can be sent to TM
+      //Format TM receives for marking array:
+      //             [0]          [1]            [2]             [3]
+      //marking: <userName>, <QuestionID>, <marksAwarded>, <returnMessage>
+      String[] marking = new String[]{userName, QuestionID, marksAwarded, returnMessage}; 
+      return marking;
   }
 
   public synchronized void markProgrammingQuestion() {
@@ -91,6 +161,8 @@ public class QuestionBank {
     // Create an instance of QB to receive
     QuestionBank questionSender = new QuestionBank();
     QuestionBank questionMarker = new QuestionBank();
+    questionMarker.markMultipleChoiceQuestion("22751096", "2", "char", "0");
+
     // questionSender.generateQuestions("jalil");
 
     // get the address of the host and set a port to commmunicate on
@@ -120,10 +192,12 @@ public class QuestionBank {
       // Respond accordingly
       // For a request for questions the request should be in the format: "<UserID>
       // requestQuestions"
-      // For a request for MCQ to be marked the request should be in the format:
-      // "<UserID> requestMCQMarking <QuestionID> <answer>"
+      // For a request for MCQ to be marked the request should be in 
+      //                [0]           [1]             [2]          [3]        [4]
+      // the format: "<UserID> requestMCQMarking <QuestionID> <attemptsMade> <answer>"
       // For a request for programming question to be marked the request should be in
-      // the format: "<UserID> requestPQMarking <QuestionID> <language> <flag><code>"
+      //                [0]           [1]           [2]            [3]         [4]      [5]  [6]
+      // the format: "<UserID> requestPQMarking <QuestionID> <attemptsMade> <language> <flag><code>"
 
       String[] requestArray = request.split(" ");
 
@@ -132,7 +206,9 @@ public class QuestionBank {
       // user
       String requestType = requestArray[1];
       String userID = requestArray[0];
-
+      String QuestionID = requestArray[2];
+      String attemptsMade = requestArray[3];
+      
       switch (requestType) {
         case "requestQuestions":
           System.out.println("\033[34mQuestions requested\033[0m\n");
@@ -141,12 +217,17 @@ public class QuestionBank {
           break;
         case "requestMCQMarking":
           System.out.println("MCQ marking requested");
-
-          questionMarker.markMultipleChoiceQuestion();
+          String studentAnswer = requestArray[3];
+          String [] output = questionMarker.markMultipleChoiceQuestion(userID, QuestionID, studentAnswer, attemptsMade);
+          if(output[3] == "Correct!"){
+            questionSender.sendMCQmarkingToTM(clientSocket, true, output[0], output[1], output[2], output[3]);
+          }else{
+            questionSender.sendMCQmarkingToTM(clientSocket, false, output[0], output[1], output[2], output[3]);
+          }
           break;
         case "requestPQMarking":
           questionMarker.markProgrammingQuestion();
-          String language = requestArray[2];
+          String language = requestArray[3];
           String[] array2 = request.split(language);
           String code = array2[1];
           break;
