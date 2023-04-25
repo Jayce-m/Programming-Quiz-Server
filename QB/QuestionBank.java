@@ -3,8 +3,10 @@ import java.io.*;
 import java.net.*;
 import org.json.*;
 import java.util.Random;
-import org.python.core.*;
-import org.python.util.*;
+// import org.python.core.*;
+// import org.python.util.*;
+
+import javax.lang.model.util.ElementScanner14;
 
 // 22/04/2023
 // Laid out a skeleton of how everythings going to work'
@@ -51,20 +53,23 @@ public class QuestionBank {
     bufferedWriter.write(usersQuestions.toString());
     bufferedWriter.close();
   }
-  public synchronized void sendMCQmarkingToTM(Socket clientSocket, Boolean correct, String userName, String QuestionID, String marksAwarded, String returnMessage) throws Exception {
+
+  public synchronized void sendMCQmarkingToTM(Socket clientSocket, Boolean correct, String userName, String QuestionID,
+      String marksAwarded, String returnMessage) throws Exception {
     // Creates an output stream and sends the current
-    // userName, QuestionID, marksAwarded, and a message to indicate if they were correct/incorrect
-    // or exceeded the number of attempts and therefore returns the expected answer  
+    // userName, QuestionID, marksAwarded, and a message to indicate if they were
+    // correct/incorrect
+    // or exceeded the number of attempts and therefore returns the expected answer
     OutputStream mcqOut = clientSocket.getOutputStream();
-    mcqOut.write((userName+QuestionID+marksAwarded+returnMessage).getBytes());
-    if(correct){
+    mcqOut.write((userName + QuestionID + marksAwarded + returnMessage).getBytes());
+    if (correct) {
       mcqOut.write("Correct".getBytes());
-    }else{
+    } else {
       mcqOut.write("Incorrect".getBytes());
     }
     mcqOut.flush();
     mcqOut.close();
-    
+
     // Close the socket
     clientSocket.close();
 
@@ -95,64 +100,72 @@ public class QuestionBank {
     clientSocket.close();
   }
 
-  public synchronized String[] markMultipleChoiceQuestion(String userName, String QuestionID, String studentAnswer, String attempts) throws Exception {
+  public synchronized String[] markMultipleChoiceQuestion(String userName, String QuestionID, String studentAnswer,
+      String attempts) throws Exception {
     // gets response from TM and checks if they got the question right
     // returns true or false
-    
+
     // Get questions from Questions.json and add to the users json file
     FileReader reader = new FileReader(System.getProperty("user.dir") + "/QB/storage/questions/questions.json");
     JSONTokener tokener = new JSONTokener(reader);
 
     // Create a JSON array from the JSONTokener object
     JSONArray allQuestionsJsonArray = new JSONArray(tokener);
-    //Retrieve the question to be marked from the questionbank using the QuestionID
-    int question = Integer.parseInt(QuestionID) - 1;                            //Question ID starts at 1;
-    JSONObject theQuestion = allQuestionsJsonArray.getJSONObject(question);     
-    String theAnswer = theQuestion.getString("answer");                     //find the corresponding answer
+    // Retrieve the question to be marked from the questionbank using the QuestionID
+    int id = Integer.parseInt(QuestionID) - 1; // Question ID starts at 1;
+    JSONObject theQuestion = allQuestionsJsonArray.getJSONObject(id);
+    String theAnswer = theQuestion.getString("answer"); // find the corresponding answer
 
     boolean correct = false;
-    if(studentAnswer == theAnswer){           //check if they were correct
+    if (studentAnswer.equals(theAnswer)) { // check if they were correct
       correct = true;
-    } else correct = false;                   //add a return here that says they were wrong
+    }
 
     String marksAwarded = "0";
     String returnMessage = " ";
-    if(correct || attempts == "3"){           //once they're either correct or exceed attempt limit, award marks or send correct solution.
-      switch(attempts){
-        case "0":
+    if (correct || attempts.equals("3")) { // once they're either correct or exceed attempt limit, award marks or send
+                                           // // correct solution.
+      switch (attempts) {
+        case "1":
           marksAwarded = "3";
           returnMessage = "Correct!";
-          break;
-        case "1":
-          marksAwarded = "2";
-          returnMessage = "Correct!";
+          System.out.println(returnMessage + " Marks awarded: " + marksAwarded);
           break;
         case "2":
-          marksAwarded = "1";
+          marksAwarded = "2";
           returnMessage = "Correct!";
+          System.out.println(returnMessage + " Marks awarded: " + marksAwarded);
           break;
         case "3":
-          marksAwarded = "0";
-          returnMessage = "Incorrect! The correct answer was: " + theAnswer;
-          break;
+          if (correct) {
+            marksAwarded = "1";
+            returnMessage = "Correct!";
+            System.out.println(returnMessage + " Marks awarded: " + marksAwarded);
+          } else {
+            marksAwarded = "0";
+            returnMessage = "Incorrect! The correct answer was: " + theAnswer;
+            System.out.println(returnMessage + " Marks awarded: " + marksAwarded);
+            break;
           }
-      }else {
-        returnMessage = "Incorrect, try again!";
       }
+    } else {
+      returnMessage = "Incorrect, try again!";
+      System.out.println(returnMessage + " Marks awarded: " + marksAwarded);
+    }
 
-      //put everything into a string array so that it can be sent to TM
-      //Format TM receives for marking array:
-      //             [0]          [1]            [2]             [3]
-      //marking: <userName>, <QuestionID>, <marksAwarded>, <returnMessage>
-      String[] marking = new String[]{userName, QuestionID, marksAwarded, returnMessage}; 
-      return marking;
+    // put everything into a string array so that it can be sent to TM
+    // Format TM receives for marking array:
+    // [0] [1] [2] [3]
+    // marking: <userName>, <QuestionID>, <marksAwarded>, <returnMessage>
+    String[] marking = new String[] { userName, QuestionID, marksAwarded, returnMessage };
+    return marking;
   }
 
   public void markProgrammingQuestion(String programmingLanguage, String code, String numberOfAttemptsString) {
-    PythonInterpreter interp = new PythonInterpreter();
-    interp.exec(code);
-    String output = interp;
-    System.out.println(output);
+    // PythonInterpreter interp = new PythonInterpreter();
+    // interp.exec(code);
+    // String output = interp;
+    // System.out.println(output);
   }
 
   public static void main(String[] args) throws Exception {
@@ -161,9 +174,8 @@ public class QuestionBank {
     // Create an instance of QB to receive
     QuestionBank questionSender = new QuestionBank();
     QuestionBank questionMarker = new QuestionBank();
-    String code2 = "for i in range(1, 11):\n\tprint(i)";
 
-    questionMarker.markProgrammingQuestion("python", code2, "0");
+    questionMarker.markMultipleChoiceQuestion("jalil", "2", "char", "1");
 
     // get the address of the host and set a port to commmunicate on
     InetAddress address = InetAddress.getLocalHost();
@@ -213,13 +225,13 @@ public class QuestionBank {
           questionSender.generateQuestions(userID);
           questionSender.sendQuestionsToTM(clientSocket, userID);
           break;
-          case "requestMCQMarking":
+        case "requestMCQMarking":
           System.out.println("MCQ marking requested");
           String studentAnswer = requestArray[3];
-          String [] output = questionMarker.markMultipleChoiceQuestion(userID, QuestionID, studentAnswer, attemptsMade);
-          if(output[3] == "Correct!"){
+          String[] output = questionMarker.markMultipleChoiceQuestion(userID, QuestionID, studentAnswer, attemptsMade);
+          if (output[3] == "Correct!") {
             questionSender.sendMCQmarkingToTM(clientSocket, true, output[0], output[1], output[2], output[3]);
-          }else{
+          } else {
             questionSender.sendMCQmarkingToTM(clientSocket, false, output[0], output[1], output[2], output[3]);
           }
           break;
