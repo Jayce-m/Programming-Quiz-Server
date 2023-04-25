@@ -121,9 +121,9 @@ public class QuestionBank {
       // For a request for questions the request should be in the format: "<UserID>
       // requestQuestions"
       // For a request for MCQ to be marked the request should be in the format:
-      // "<UserID> requestMCQMarking <answer>"
+      // "<UserID> requestMCQMarking <QuestionID> <answer>"
       // For a request for programming question to be marked the request should be in
-      // the format: "<UserID> requestPQMarking <code>"
+      // the format: "<UserID> requestPQMarking <QuestionID> <language> <flag><code>"
 
       String[] requestArray = request.split(" ");
 
@@ -141,10 +141,14 @@ public class QuestionBank {
           break;
         case "requestMCQMarking":
           System.out.println("MCQ marking requested");
+
           questionMarker.markMultipleChoiceQuestion();
           break;
         case "requestPQMarking":
           questionMarker.markProgrammingQuestion();
+          String language = requestArray[2];
+          String[] array2 = request.split(language);
+          String code = array2[1];
           break;
         default:
           break;
