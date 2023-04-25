@@ -61,7 +61,7 @@ public class QuestionBank {
     // correct/incorrect
     // or exceeded the number of attempts and therefore returns the expected answer
     OutputStream mcqOut = clientSocket.getOutputStream();
-    mcqOut.write((userName + QuestionID + marksAwarded + returnMessage).getBytes());
+    mcqOut.write((userName+ ","+QuestionID+","+marksAwarded+","+returnMessage).getBytes());
     if (correct) {
       mcqOut.write("Correct".getBytes());
     } else {
