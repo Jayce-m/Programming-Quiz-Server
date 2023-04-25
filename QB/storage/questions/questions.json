@@ -4,7 +4,12 @@
     "language": "C",
     "multiple": true,
     "question": "What is the correct syntax for declaring an array in C?",
-    "options": ["int array[];", "array int[];", "int[] array;", "array[] int;"],
+    "options": [
+      "int array[];",
+      "array int[];",
+      "int[] array;",
+      "array[] int;"
+    ],
     "answer": "int[] array;"
   },
   {
@@ -12,7 +17,12 @@
     "language": "Python",
     "multiple": true,
     "question": "Which of the following is not a data type in Python?",
-    "options": ["int", "float", "boolean", "char"],
+    "options": [
+      "int",
+      "float",
+      "boolean",
+      "char"
+    ],
     "answer": "char"
   },
   {
@@ -46,7 +56,12 @@
     "language": "Python",
     "multiple": true,
     "question": "What is the output of the following Python code?\n\nx = [1, 2, 3]\ny = x\nx.append(4)\nprint(y)",
-    "options": ["[1, 2, 3]", "[1, 2, 3, 4]", "[1, 2, 4]", "[1, 2, 4, 3]"],
+    "options": [
+      "[1, 2, 3]",
+      "[1, 2, 3, 4]",
+      "[1, 2, 4]",
+      "[1, 2, 4, 3]"
+    ],
     "answer": "[1, 2, 3, 4]"
   },
   {
@@ -67,7 +82,12 @@
     "language": "Java",
     "multiple": true,
     "question": "Which of the following is a method used to check if two strings are equal in Java?",
-    "options": ["equals()", "compareTo()", "contains()", "substring()"],
+    "options": [
+      "equals()",
+      "compareTo()",
+      "contains()",
+      "substring()"
+    ],
     "answer": "equals()"
   },
   {
@@ -75,7 +95,12 @@
     "language": "Python",
     "multiple": true,
     "question": "What is the output of the following Python code?\n\nx = 5\ndef myFunc():\n    global x\n    x = 3\nmyFunc()\nprint(x)",
-    "options": ["5", "3", "8", "Error"],
+    "options": [
+      "5",
+      "3",
+      "8",
+      "Error"
+    ],
     "answer": "3"
   },
   {
@@ -83,7 +108,12 @@
     "language": "Java",
     "multiple": true,
     "question": "Which of the following is a method used to find the index of a substring in a string in Java?",
-    "options": ["indexOf()", "lastIndexOf()", "substring()", "replace()"],
+    "options": [
+    "indexOf()",
+    "lastIndexOf()",
+    "substring()",
+    "replace()"
+    ],
     "answer": "indexOf()"
   },
   {
@@ -91,7 +121,12 @@
     "language": "Java",
     "multiple": true,
     "question": "Which of the following is a method used to convert a string to uppercase in Java?",
-    "options": ["toUpperCase()", "toLowerCase()", "concat()", "replace()"],
+    "options": [
+    "toUpperCase()",
+    "toLowerCase()",
+    "concat()",
+    "replace()"
+    ],
     "answer": "toUpperCase()"
   },
   {
@@ -99,7 +134,12 @@
     "language": "Python",
     "multiple": true,
     "question": "Which of the following is not a valid method for removing an element from a list in Python?",
-    "options": ["remove()", "delete()", "pop()", "clear()"],
+    "options": [
+    "remove()",
+    "delete()",
+    "pop()",
+    "clear()"
+    ],
     "answer": "delete()"
   },
   {
@@ -108,10 +148,10 @@
     "multiple": true,
     "question": "Which of the following statements is true about Python sets?",
     "options": [
-      "Sets are ordered",
-      "Sets can contain duplicate elements",
-      "Sets are mutable",
-      "Sets can be used as keys in dictionaries"
+    "Sets are ordered",
+    "Sets can contain duplicate elements",
+    "Sets are mutable",
+    "Sets can be used as keys in dictionaries"
     ],
     "answer": "Sets can be used as keys in dictionaries"
   }

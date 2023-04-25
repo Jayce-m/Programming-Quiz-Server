@@ -1,14 +1,9 @@
 {
   "java.dependency.packagePresentation": "flat",
-  "java.project.referencedLibraries": {
-    "include": [
-      "lib/**/*.jar",
-      "/Users/jalilinayat-hussain/Downloads/json-20230227.jar",
-      "/Users/janodiweerasinghe/Downloads/json-simple-1.1.jar",
-      "/Users/jalilinayat-hussain/Downloads/jython-standalone-2.7.3.jar"
-    ],
-    "exclude": [
-      "/Users/jalilinayat-hussain/Downloads/jython-2.2.1.jar"
-    ]
-  }
+  "java.project.referencedLibraries": [
+    "lib/**/*.jar",
+    "/Users/jalilinayat-hussain/Downloads/json-20230227.jar",
+    "/Users/janodiweerasinghe/Downloads/json-simple-1.1.jar",
+    "/Users/janodiweerasinghe/Downloads/json-20230227.jar"
+  ]
 }

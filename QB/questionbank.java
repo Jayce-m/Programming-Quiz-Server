@@ -85,6 +85,8 @@ public class QuestionBank {
   public void markProgrammingQuestion(String programmingLanguage, String code, String numberOfAttemptsString) {
     PythonInterpreter interp = new PythonInterpreter();
     interp.exec(code);
+    String output = interp;
+    System.out.println(output);
   }
 
   public static void main(String[] args) throws Exception {
@@ -93,6 +95,9 @@ public class QuestionBank {
     // Create an instance of QB to receive
     QuestionBank questionSender = new QuestionBank();
     QuestionBank questionMarker = new QuestionBank();
+    String code2 = "for i in range(1, 11):\n\tprint(i)";
+
+    questionMarker.markProgrammingQuestion("python", code2, "0");
 
     // get the address of the host and set a port to commmunicate on
     InetAddress address = InetAddress.getLocalHost();
