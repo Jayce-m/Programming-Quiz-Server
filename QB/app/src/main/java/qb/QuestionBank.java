@@ -3,8 +3,8 @@ package qb;
 import java.io.*;
 import java.net.*;
 import org.json.*;
+import java.util.Arrays;
 import java.util.Random;
-
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.nio.file.*;
@@ -21,7 +21,7 @@ public class QuestionBank {
         // files are retreived from the right path
 
         File file = new File("src/main/resources/usersQuestions/" + userName + ".json");
-        boolean created = file.createNewFile();
+        file.createNewFile();
 
         // Get questions from Questions.json and add to the users json file
         FileReader reader = new FileReader("src/main/resources/questions/questions.json");
@@ -112,8 +112,6 @@ public class QuestionBank {
         int id = Integer.parseInt(questionId) - 1; // Question ID starts at 1;
         JSONObject theQuestion = allQuestionsJsonArray.getJSONObject(id);
         String correctAnswer = theQuestion.getString("answer"); // find the corresponding answer
-
-        boolean correct = false;
 
         String marks = "";
         String message = "";
@@ -267,7 +265,7 @@ public class QuestionBank {
         System.out.println("\n\033[32mYour address: " + address + "\033[0m\n");
 
         // Create a ServerSocket to communicate with TM
-
+        @SuppressWarnings("resource")
         ServerSocket serverSocket = new ServerSocket(port, 50, address);
         System.out.println("\033[32mServer Started...\033[0m\n");
 
@@ -285,21 +283,22 @@ public class QuestionBank {
             String request = new String(buffer, 0, length);
             System.out.println("\033[34mRequest received: " + request + "\033[0m\n");
 
-            // Respond accordingly
-            // For a request for questions the request should be in the format: "<UserID>
-            // requestQuestions"
+            // For a request for questions the request should be in the format:
+            // "<UserID> requestQuestions"
+
             // For a request for MCQ to be marked the request should be in the format:
             // "<UserID> requestMCQMarking <QuestionID> <answer>"
+
             // For a request for programming question to be marked the request should be in
-            // the format: "<UserID> requestPQMarking <QuestionID> <language> <flag><code>"
+            // the format:
+            // "<UserID> requestPQMarking <QuestionID> <language> <code>"
 
-            String[] requestArray = request.split(" ");
-
+            String[] requestArray = request.split(" ", 5);
             // If request is for questions
             // We need the userID so we can generate the 10 questions in a file for that
             // user
-            String requestType = requestArray[1];
             String userID = requestArray[0];
+            String requestType = requestArray[1];
             String QuestionID = requestArray[2];
             String attemptsMade = requestArray[3];
 
@@ -310,7 +309,7 @@ public class QuestionBank {
                 questionSender.sendQuestionsToTM(clientSocket, userID);
                 break;
             case "requestMCQMarking":
-                System.out.println("MCQ marking requested");
+                System.out.println("\033[34mMCQ marking requested\033[0m\n");
                 String studentAnswer = requestArray[3];
                 String[] output = questionMarker.markMultipleChoiceQuestion(userID, QuestionID, studentAnswer, attemptsMade);
                 if (output[3] == "Correct!") {
@@ -320,10 +319,10 @@ public class QuestionBank {
                 }
                 break;
             case "requestPQMarking":
-                // questionMarker.markProgrammingQuestion();
                 String language = requestArray[2];
                 String[] array2 = request.split(language);
                 String code = array2[1];
+                questionMarker.markProgrammingQuestion(userID, QuestionID, userID, attemptsMade, language);
                 break;
             default:
                 break;
