@@ -11,7 +11,7 @@ public class QuestionBankTest {
     @Test
     public void markJavaQuestionTest() throws Exception {
         QuestionBank questionBank = new QuestionBank();
-        String usersAnswer = "public class HelloWorld {\n  public static void main(String[] args) {\n    System.out.println(\"Hello, World!\");\n  }\n}";
+        String usersAnswer = "public class Hello {\n  public static void main(String[] args) {\n    System.out.println(\"Hello, World!\");\n  }\n}";
         String questionID = "14";
         String userId = "22751096";
         String attempt = "1";

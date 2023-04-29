@@ -20,12 +20,7 @@
     "language": "Java",
     "multiple": true,
     "question": "Which of the following is a valid way to declare a variable in Java?",
-    "options": [
-      "int myVar = 5;",
-      "myVar int = 5;",
-      "int = myVar 5;",
-      "5 = int myVar;"
-    ],
+    "options": ["int myVar = 5;", "myVar int = 5;", "int = myVar 5;", "5 = int myVar;"],
     "answer": "int myVar = 5;"
   },
   {
@@ -33,12 +28,7 @@
     "language": "Java",
     "multiple": true,
     "question": "Which of the following is a valid way to declare and initialize a string in Java?",
-    "options": [
-      "String str = 'Hello';",
-      "String str = new String('Hello');",
-      "Both A and B",
-      "None of the above"
-    ],
+    "options": ["String str = 'Hello';", "String str = new String('Hello');", "Both A and B", "None of the above"],
     "answer": "None of the above"
   },
   {
@@ -54,12 +44,7 @@
     "language": "Java",
     "multiple": true,
     "question": "Which of the following is a valid way to create a new object in Java?",
-    "options": [
-      "MyClass myObj = new MyClass();",
-      "new MyClass() = myObj;",
-      "MyClass = new myObj();",
-      "MyClass myObj;"
-    ],
+    "options": ["MyClass myObj = new MyClass();", "new MyClass() = myObj;", "MyClass = new myObj();", "MyClass myObj;"],
     "answer": "MyClass myObj = new MyClass();"
   },
   {
@@ -107,33 +92,28 @@
     "language": "Python",
     "multiple": true,
     "question": "Which of the following statements is true about Python sets?",
-    "options": [
-      "Sets are ordered",
-      "Sets can contain duplicate elements",
-      "Sets are mutable",
-      "Sets can be used as keys in dictionaries"
-    ],
+    "options": ["Sets are ordered", "Sets can contain duplicate elements", "Sets are mutable", "Sets can be used as keys in dictionaries"],
     "answer": "Sets can be used as keys in dictionaries"
   },
   {
     "id": 13,
     "language": "Python",
     "multiple": false,
-    "question": "Write a python program that prints out the integers from 1 to 10 inclusive",
+    "question": "Create a Java program that displays integers ranging from 1 to 10, including both 1 and 10. Your program should use a class and include a main method to run the program.",
     "answer": "for i in range(1, 11):\n\tprint(i)"
   },
   {
     "id": 14,
     "language": "Java",
     "multiple": false,
-    "question": "Write a Java program to print \"Hello, World!\" to the console",
+    "question": "Write a Java program to print \"Hello, World!\" to the console. Your program should use a class and include a main method to run the program.",
     "answer": "public class HelloWorld {\n  public static void main(String[] args) {\n    System.out.println(\"Hello, World!\");\n  }\n}"
   },
   {
     "id": 15,
     "language": "Java",
     "multiple": false,
-    "Question": "Write a program to print the first 10 even numbers",
+    "Question": "Create a Java program that displays the first 10 even numbers. Your program should include a class and a main method to run the program.",
     "answer": "public class PrintEven Numbers {\n  public static void main(String[] args) {\n   for (int i = 2; i <=20; i += 2) {\n     System.out.println(i);\n    }\n }\n}"
   }
 ]
