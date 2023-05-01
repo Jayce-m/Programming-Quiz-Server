@@ -9,9 +9,12 @@ for i in range(10):
     y = random.randint(1, 10)
     question_text = f"What is {x} x {y}?"
     answer = x * y
-    questions.append({'question_text': question_text, 'answer': answer, 'user_answer': None, 'attempts': 0})
+    questions.append({'question_text': question_text,
+                     'answer': answer, 'user_answer': None, 'attempts': 0})
 
 # Define a function to display a single question and record the user's answer
+
+
 def ask_question(question):
     print(question['question_text'])
     user_answer = input("Enter your answer: ")
@@ -22,6 +25,7 @@ def ask_question(question):
         return ask_question(question)
     question['user_answer'] = user_answer
     question['attempts'] += 1
+
 
 # Loop through the questions and ask each one, allowing the user to navigate forwards and backwards
 current_question_index = 0
@@ -34,7 +38,8 @@ while True:
         print("Type 'b' to go back to the previous question.")
     if current_question_index == len(questions) - 1:
         print("You are at the end of the test.")
-        submit_test = input("Type 's' to submit the test or 'b' to go back to the previous question: ")
+        submit_test = input(
+            "Type 's' to submit the test or 'b' to go back to the previous question: ")
         if submit_test == 's':
             break
         elif submit_test == 'b':
