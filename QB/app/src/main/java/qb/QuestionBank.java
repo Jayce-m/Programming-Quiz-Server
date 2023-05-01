@@ -266,8 +266,9 @@ public class QuestionBank {
 
         // Create a ServerSocket to communicate with TM
         @SuppressWarnings("resource")
-        ServerSocket serverSocket = new ServerSocket(port, 50, address);
+        ServerSocket serverSocket = new ServerSocket(port, 50, address);    
         System.out.println("\033[32mServer Started...\033[0m\n");
+
 
         while (true) {
 
@@ -294,9 +295,6 @@ public class QuestionBank {
             // "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
 
             String[] requestArray = request.split(" ", 6);
-            // If request is for questions
-            // We need the userID so we can generate the 10 questions in a file for that
-            // user
             String userID = requestArray[0];
             String requestType = requestArray[1];
             String questionID;
