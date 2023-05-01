@@ -1,7 +1,10 @@
+#TODO: THIS SHOULD BE AN IMPORT FROM THE TESTMANAGER
+
+
 import socket
 
 # replace with the hostname or IP address of the Java server
-SERVER_HOSTNAME = '127.0.0.1'
+SERVER_HOSTNAME = '180.150.80.41'
 SERVER_PORT = 8000  # replace with the port number on which the Java server is listening
 
 # create a socket object and connect to the server

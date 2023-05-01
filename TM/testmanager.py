@@ -7,15 +7,15 @@ import socket
 
 
 landing = open('TM/landing.html', 'r').read()
-
 testpage = open('TM/test.html', 'r').read()
 
 def genSessionID():
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(32))
 
-# replace with the hostname or IP address of the Java server
-SERVER_HOSTNAME = '127.0.0.1'
-SERVER_PORT = 8000  # replace with the port number on which the Java server is listening
+# TODO: replace with the hostname or IP address of the Java server
+# TODO: replace with the port number on which the Java server is listening
+SERVER_HOSTNAME = '192.168.1.105'
+SERVER_PORT = 8000  
 
 # create a socket object and connect to the server
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

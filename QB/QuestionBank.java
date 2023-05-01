@@ -216,6 +216,8 @@ public class QuestionBank {
       // user
       String requestType = requestArray[1];
       String userID = requestArray[0];
+      //FIXME: Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 2 out of bounds for length 2
+        //at QuestionBank.main(QuestionBank.java:219)
       String QuestionID = requestArray[2];
       String attemptsMade = requestArray[3];
 
