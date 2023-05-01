@@ -6,7 +6,7 @@ import java.util.Random;
 // import org.python.core.*;
 // import org.python.util.*;
 
-import javax.lang.model.util.ElementScanner14;
+//import javax.lang.model.util.ElementScanner14;
 
 // 22/04/2023
 // Laid out a skeleton of how everythings going to work'
@@ -22,11 +22,11 @@ public class QuestionBank {
     // Ensure you are in the cits3002-proj directory when compiling so that the
     // files are retreived from the right path
 
-    File file = new File("QB/storage/usersQuestions/" + userName + ".json");
+    File file = new File("TM/storage/users/usersQuestions/" + userName + ".json");
     boolean created = file.createNewFile();
 
     // Get questions from Questions.json and add to the users json file
-    FileReader reader = new FileReader(System.getProperty("user.dir") + "/storage/questions/questions.json");
+    FileReader reader = new FileReader(System.getProperty("user.dir") + "/QB/storage/questions/questions.json");
     JSONTokener tokener = new JSONTokener(reader);
 
     // Create a JSON array from the JSONTokener object
@@ -48,7 +48,7 @@ public class QuestionBank {
       }
     }
 
-    FileWriter fileWriter = new FileWriter("QB/storage/usersQuestions/" + userName + ".json");
+    FileWriter fileWriter = new FileWriter("TM/storage/users/usersQuestions/" + userName + ".json");
     BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
     bufferedWriter.write(usersQuestions.toString());
     bufferedWriter.close();
@@ -77,7 +77,8 @@ public class QuestionBank {
 
   public synchronized void sendQuestionsToTM(Socket clientSocket, String userName) throws Exception {
     // uses sockets to send questions to task manager
-    FileInputStream fileInput = new FileInputStream("QB/storage/usersQuestions/" + userName + ".json");
+    //FIXME: throws exception on windows, still works though
+    FileInputStream fileInput = new FileInputStream("TM/storage/usersQuestions/" + userName + ".json");
 
     byte[] buffer = new byte[4096];
     int bytesRead = 0;
@@ -106,7 +107,7 @@ public class QuestionBank {
     // returns true or false
 
     // Get questions from Questions.json and add to the users json file
-    FileReader reader = new FileReader(System.getProperty("user.dir") + "/storage/questions/questions.json");
+    FileReader reader = new FileReader(System.getProperty("user.dir") + "/QB/storage/questions/questions.json");
     JSONTokener tokener = new JSONTokener(reader);
 
     // Create a JSON array from the JSONTokener object

@@ -27,7 +27,6 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt,curMarks):
     #iterate over the questions json file inside storage
     #TODO: change the path to the username.json
     with open('QB/questions/questions.json') as json_file:
-        
         # Load the questions from the file
         data = json.load(json_file)
 

@@ -5,7 +5,7 @@ import socket
 
 # TODO: replace with the hostname or IP address of the Java server
 # TODO: replace with the port number on which the Java server is listening
-SERVER_HOSTNAME = '180.150.80.41'
+SERVER_HOSTNAME = '192.168.1.105'
 SERVER_PORT = 8000
 
 # create a socket object and connect to the server
@@ -29,3 +29,6 @@ def request():
         print('Received data saved to received_data.txt')
 
         # print the response received from the server
+
+
+request()
