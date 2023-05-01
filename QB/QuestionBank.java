@@ -26,7 +26,7 @@ public class QuestionBank {
     boolean created = file.createNewFile();
 
     // Get questions from Questions.json and add to the users json file
-    FileReader reader = new FileReader(System.getProperty("user.dir") + "/QB/storage/questions/questions.json");
+    FileReader reader = new FileReader(System.getProperty("user.dir") + "/storage/questions/questions.json");
     JSONTokener tokener = new JSONTokener(reader);
 
     // Create a JSON array from the JSONTokener object
@@ -106,7 +106,7 @@ public class QuestionBank {
     // returns true or false
 
     // Get questions from Questions.json and add to the users json file
-    FileReader reader = new FileReader(System.getProperty("user.dir") + "/QB/storage/questions/questions.json");
+    FileReader reader = new FileReader(System.getProperty("user.dir") + "/storage/questions/questions.json");
     JSONTokener tokener = new JSONTokener(reader);
 
     // Create a JSON array from the JSONTokener object
@@ -216,6 +216,8 @@ public class QuestionBank {
       // user
       String requestType = requestArray[1];
       String userID = requestArray[0];
+      String QuestionID;
+      String attemptsMade;
 
       switch (requestType) {
         case "requestQuestions":
@@ -225,8 +227,8 @@ public class QuestionBank {
           break;
         case "requestMCQMarking":
           System.out.println("MCQ marking requested");
-          String QuestionID = requestArray[2];
-          String attemptsMade = requestArray[3];
+          QuestionID = requestArray[2];
+          attemptsMade = requestArray[3];
           String studentAnswer = requestArray[3];
           String[] output = questionMarker.markMultipleChoiceQuestion(userID, QuestionID, studentAnswer, attemptsMade);
           if (output[3] == "Correct!") {
@@ -237,8 +239,8 @@ public class QuestionBank {
           break;
         case "requestPQMarking":
           // questionMarker.markProgrammingQuestion();
-          String QuestionID = requestArray[2];
-          String attemptsMade = requestArray[3];
+          QuestionID = requestArray[2];
+          attemptsMade = requestArray[3];
           String language = requestArray[2];
           String[] array2 = request.split(language);
           String code = array2[1];
