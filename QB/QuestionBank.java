@@ -216,8 +216,6 @@ public class QuestionBank {
       // user
       String requestType = requestArray[1];
       String userID = requestArray[0];
-      String QuestionID = requestArray[2];
-      String attemptsMade = requestArray[3];
 
       switch (requestType) {
         case "requestQuestions":
@@ -227,6 +225,8 @@ public class QuestionBank {
           break;
         case "requestMCQMarking":
           System.out.println("MCQ marking requested");
+          String QuestionID = requestArray[2];
+          String attemptsMade = requestArray[3];
           String studentAnswer = requestArray[3];
           String[] output = questionMarker.markMultipleChoiceQuestion(userID, QuestionID, studentAnswer, attemptsMade);
           if (output[3] == "Correct!") {
@@ -237,6 +237,8 @@ public class QuestionBank {
           break;
         case "requestPQMarking":
           // questionMarker.markProgrammingQuestion();
+          String QuestionID = requestArray[2];
+          String attemptsMade = requestArray[3];
           String language = requestArray[2];
           String[] array2 = request.split(language);
           String code = array2[1];
