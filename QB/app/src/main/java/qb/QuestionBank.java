@@ -287,20 +287,20 @@ public class QuestionBank {
             // "<UserID> requestQuestions"
 
             // For a request for MCQ to be marked the request should be in the format:
-            // "<UserID> requestMCQMarking <QuestionID> <answer>"
+            // "<UserID> requestMCQMarking <QuestionID> <attempts> <answer>"
 
             // For a request for programming question to be marked the request should be in
             // the format:
-            // "<UserID> requestPQMarking <QuestionID> <language> <code>"
+            // "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
 
-            String[] requestArray = request.split(" ", 5);
+            String[] requestArray = request.split(" ", 6);
             // If request is for questions
             // We need the userID so we can generate the 10 questions in a file for that
             // user
             String userID = requestArray[0];
             String requestType = requestArray[1];
-            String QuestionID = requestArray[2];
-            String attemptsMade = requestArray[3];
+            String questionID;
+            String attempts;
 
             switch (requestType) {
             case "requestQuestions":
@@ -309,9 +309,11 @@ public class QuestionBank {
                 questionSender.sendQuestionsToTM(clientSocket, userID);
                 break;
             case "requestMCQMarking":
+                questionID = requestArray[2];
+                attempts = requestArray[3];
+                String answer = requestArray[4];
                 System.out.println("\033[34mMCQ marking requested\033[0m\n");
-                String studentAnswer = requestArray[3];
-                String[] output = questionMarker.markMultipleChoiceQuestion(userID, QuestionID, studentAnswer, attemptsMade);
+                String[] output = questionMarker.markMultipleChoiceQuestion(userID, questionID, answer, attempts);
                 if (output[3] == "Correct!") {
                     questionSender.sendMCQmarkingToTM(clientSocket, true, output[0], output[1], output[2], output[3]);
                 } else {
@@ -319,10 +321,11 @@ public class QuestionBank {
                 }
                 break;
             case "requestPQMarking":
-                String language = requestArray[2];
-                String[] array2 = request.split(language);
-                String code = array2[1];
-                questionMarker.markProgrammingQuestion(userID, QuestionID, userID, attemptsMade, language);
+                questionID = requestArray[2];
+                attempts = requestArray[3];
+                String language = requestArray[4];
+                String code = requestArray[5];
+                questionMarker.markProgrammingQuestion(code, questionID, userID, attempts, language);
                 break;
             default:
                 break;
