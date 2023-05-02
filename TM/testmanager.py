@@ -59,20 +59,25 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
 
     elif (current_question['multiple'] == False):
         # generate HTML ace editor
-        programming_html = '''<div class="d-flex justify-content-center align-items-center vh-100">
+        programming_html = """<div class="d-flex justify-content-center align-items-center vh-100">
         <div class="container">
             <div id="editor-container">
                 <div id="editor">testing</div>
                 </div>
             </div>
-        </div>'''
+        </div>"""
 
         # Open html doc
         html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()
+
+
         # Fill in placeholders in HTML document
         #FIXME: needs extra format specifiers in test.html
-        filled_doc = html_doc % (fullName, username, questionNum, curAttempt, curMarks, current_question['id'], current_question['question'], programming_html)
-
+        filled_doc = html_doc % (fullName, username, curMarks,
+                                questionNum, current_question['question'], programming_html)        
+        script_doc = open(os.path.join(basedir, 'script.html'), 'r').read()
+        filled_doc = filled_doc + (script_doc % (questionNum, curAttempt))
+        
         # Send response to client
         httpd.wfile.write(bytes(filled_doc, 'utf-8'))
 
@@ -222,12 +227,10 @@ class TestManager(BaseHTTPRequestHandler):
                                 self.end_headers()
                                 serveTest(self, user, fullName, questionNum, curAttempt, curMarks)
                                 return
-                            else:
-                                self.send_response(401)
-                                self.send_header('Content-type', 'text/html')
-                                self.end_headers()
-                                self.wfile.write(bytes("Session expired!", 'utf-8'))
-                                return
+                    self.send_response(401)
+                    self.send_header('Content-type', 'text/html')
+                    self.end_headers()
+                    self.wfile.write(bytes("Session expired!", 'utf-8'))
         if self.path == '/back':
             # Get session ID
             cookie = self.headers.get('Cookie')
@@ -260,12 +263,10 @@ class TestManager(BaseHTTPRequestHandler):
                                 self.end_headers()
                                 serveTest(self, user, fullName, questionNum, curAttempt, curMarks)
                                 return
-                            else:
-                                self.send_response(401)
-                                self.send_header('Content-type', 'text/html')
-                                self.end_headers()
-                                self.wfile.write(bytes("Session expired!", 'utf-8'))
-                                return
+                    self.send_response(401)
+                    self.send_header('Content-type', 'text/html')
+                    self.end_headers()
+                    self.wfile.write(bytes("Session expired!", 'utf-8'))
             return
 
 
