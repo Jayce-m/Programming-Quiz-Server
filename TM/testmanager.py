@@ -23,7 +23,7 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
     #requestQuestions.request()
 
     # If there exists a username.json, open and store in data
-    
+     
     # iterate over the questions json file inside storage
     # TODO: change the path to the username.json
     with open('TM/storage/users/usersQuestions/' + username + '.json') as json_file:
