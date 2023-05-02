@@ -51,7 +51,7 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
         html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()
         # FIXME: Currently need to have multiple 'test' strings at the end for some reason, probably something to do with options_html adding format identifiers
         filled_doc = html_doc % (fullName, username, questionNum, curAttempt, curMarks,
-                                current_question['id'], current_question['question'], options_html, 'test', 'test', 'test', 'test')
+                                questionNum, current_question['question'], options_html, 'test', 'test', 'test', 'test')
 
         # Send response to client
         httpd.wfile.write(bytes(filled_doc, 'utf-8'))
