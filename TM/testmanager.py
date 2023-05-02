@@ -1,15 +1,14 @@
+import os
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import http.cookies
 from urllib.parse import urlparse, parse_qs
-import json
-import random
-import string
-import datetime
-import socket
+import json,random,string,datetime,socket
 import requestQuestions
 
-landing = open('TM/landing.html', 'r').read()
-testpage = open('TM/test.html', 'r').read()
+landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
+testpage = open(os.path.join(basedir, 'test.html'), 'r').read()
 
 
 def genSessionID():
@@ -26,7 +25,7 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
      
     # iterate over the questions json file inside storage
     # TODO: change the path to the username.json
-    with open('TM/storage/users/usersQuestions/' + username + '.json') as json_file:
+    with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
         # Load the questions from the file
         data = json.load(json_file)
 
@@ -49,8 +48,8 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
             options_html += '</div>'
 
     # Fill in placeholders in HTML document
-    html_doc = open('TM/test.html', 'r').read()
-    # FIXME: Currently need to have multiple 'test' strings at the end for some reason, probably something to do with options_html adding format identifiers
+    html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()    
+# FIXME: Currently need to have multiple 'test' strings at the end for some reason, probably something to do with options_html adding format identifiers
     filled_doc = html_doc % (fullName, username, questionNum, curAttempt, curMarks,
                              current_question['id'], current_question['question'], options_html, 'test', 'test', 'test', 'test')
 
@@ -67,7 +66,8 @@ class TestManager(BaseHTTPRequestHandler):
                 name, value = c.strip().split('=')
                 if name == 'session-id':
                     session_id = value
-                    with open('TM/storage/users/users.json') as json_file:
+
+                    with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
                         data = json.load(json_file)
                         for user in data:
                             if (data[user]['session-id'] == session_id):
@@ -87,7 +87,7 @@ class TestManager(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-        landing = open('TM/landing.html', 'r').read()
+        landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
         self.wfile.write(bytes(landing, 'utf-8'))
 
     def do_POST(self):
@@ -98,13 +98,13 @@ class TestManager(BaseHTTPRequestHandler):
                 name, value = c.strip().split('=')
                 if name == 'session-id':
                     session_id = value
-                    with open('TM/storage/users/users.json') as json_file:
+                    with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
                         data = json.load(json_file)
                         for user in data:
                             if (data[user]['session-id'] == session_id):
                                 # Remove session ID
                                 data[user]['session-id'] = ''
-                                with open('TM/storage/users/users.json', 'w') as outfile:
+                                with open(os.path.join(basedir, 'storage/users/users.json'),'w') as outfile:
                                     json.dump(data, outfile, indent=4)
                                 break
             # Serve landing page
@@ -112,7 +112,7 @@ class TestManager(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
 
-            landing = open('TM/landing.html', 'r').read()
+            landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
             self.wfile.write(bytes(landing, 'utf-8'))
             return
         if self.path == '/login':
@@ -122,7 +122,7 @@ class TestManager(BaseHTTPRequestHandler):
             username = data_dict['username'][0]
             password = data_dict['password'][0]
 
-            with open('TM/storage/users/users.json') as json_file:
+            with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
                 data = json.load(json_file)
                 if (username in data):
                     if (password == data[username]['password']):
@@ -143,7 +143,7 @@ class TestManager(BaseHTTPRequestHandler):
 
                         # Retrieve relevant information and store session ID in json
                         data[username]['session-id'] = sessionid
-                        with open('TM/storage/users/users.json', 'w') as outfile:
+                        with open('storage/users/users.json', 'w') as outfile:
                             json.dump(data, outfile, indent=4)
                         fullName = data[username]['fullname']
                         questionNum = data[username]['question']
