@@ -49,16 +49,9 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
 
         # Fill in placeholders in HTML document
         html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()
-        ace_code = """
-            <div id="editor" style="height: 300px;"></div>
-            <script>
-                var editor = ace.edit("editor");
-                editor.setTheme("ace/theme/monokai");
-                editor.session.setMode("ace/mode/javascript");
-            </script>
-        """
+        # FIXME: Currently need to have multiple 'test' strings at the end for some reason, probably something to do with options_html adding format identifiers
         filled_doc = html_doc % (fullName, username, curMarks,
-                                questionNum, current_question['question'], options_html, ace_code)
+                                questionNum, current_question['question'], options_html)
         script_doc = open(os.path.join(basedir, 'script.html'), 'r').read()
         filled_doc = filled_doc + (script_doc % (questionNum, curAttempt))
 
@@ -162,7 +155,7 @@ class TestManager(BaseHTTPRequestHandler):
 
                         # Retrieve relevant information and store session ID in json
                         data[username]['session-id'] = sessionid
-                        with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
+                        with open('storage/users/users.json', 'w') as outfile:
                             json.dump(data, outfile, indent=4)
                         fullName = data[username]['fullname']
                         questionNum = data[username]['question']
