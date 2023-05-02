@@ -50,8 +50,10 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
         # Fill in placeholders in HTML document
         html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()
         # FIXME: Currently need to have multiple 'test' strings at the end for some reason, probably something to do with options_html adding format identifiers
-        filled_doc = html_doc % (fullName, username, questionNum, curAttempt, curMarks,
-                                questionNum, current_question['question'], options_html, 'test', 'test', 'test', 'test')
+        filled_doc = html_doc % (fullName, username, curMarks,
+                                questionNum, current_question['question'], options_html)
+        script_doc = open(os.path.join(basedir, 'script.js'), 'r').read()
+        filled_doc = filled_doc + (script_doc % (questionNum, curAttempt))
 
         # Send response to client
         httpd.wfile.write(bytes(filled_doc, 'utf-8'))
@@ -77,7 +79,7 @@ class TestManager(BaseHTTPRequestHandler):
                             if (data[user]['session-id'] == session_id):
                                 fullName = data[user]['fullname']
                                 questionNum = data[user]['question']
-                                curAttempt = data[user]['attempt']
+                                curAttempt = data[user]['attempts'][str(questionNum)]
                                 curMarks = data[user]['marks']
 
                                 # Serve test
@@ -151,7 +153,7 @@ class TestManager(BaseHTTPRequestHandler):
                             json.dump(data, outfile, indent=4)
                         fullName = data[username]['fullname']
                         questionNum = data[username]['question']
-                        curAttempt = data[username]['attempt']
+                        curAttempt = data[username]['attempts'][str(questionNum)]
                         curMarks = data[username]['marks']
 
                         # Serve HTML page

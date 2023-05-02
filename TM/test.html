@@ -25,11 +25,10 @@
                         <a class="nav-link">Welcome, %s (ID: %s)! </a>
                     </li>
                     <li class="nav-item">
-                        <!-- questionNum, curAttempt -->
-                        <a class="nav-link">You are on question %s (attempt %s) out of 10</a>
+                        <a class="nav-link" id="attemptStr"></a>
                     </li>
                     <li class="nav-item">
-                        <!-- curMarks, -->
+                        <!-- curMarks-->
                         <a class="nav-link">Marks so far: %s/30</a>
                     </li>
                 </ul>
@@ -43,38 +42,20 @@
     </nav>
     <div class="container mt-3">
         <form method="post" action="submit_answer">
-            <!-- first_question['id'] -->
+            <!-- questionNum -->
             <h4>Question %s:</h4>
+            <!-- current_question -->
+            <div>
+                %s
+            </div>
             <!-- options_html -->
             <div>
                 %s
             </div>
 
-            <div>
-                %s
-            </div>
-
-            <!-- <div class="form-check">
-                <input class="form-check-input" type="radio" name="answer" id="option1" value="option1">
-                <label class="form-check-label" for="option1">%s</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="answer" id="option2" value="option2">
-                <label class="form-check-label" for="option2">%s</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="answer" id="option3" value="option3">
-                <label class="form-check-label" for="option3">%s</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="answer" id="option4" value="option4">
-                <label class="form-check-label" for="option4">%s</label>
-            </div>
-             -->
-
-             <button type="submit" class="btn btn-primary mt-3">Submit Answer</button>
-             <button type="submit" class="btn btn-primary mt-3">Next</button>
-             <button type="submit" class="btn btn-primary mt-3">Back</button>
+            <button type="submit" id="submitBtn" class="btn btn-primary mt-3">Submit Answer</button>
+            <button type="submit" id="nextBtn" class="btn btn-primary mt-3">Next</button>
+            <button type="submit" id="backBtn" class="btn btn-primary mt-3">Back</button>
         </form>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
@@ -83,5 +64,3 @@
         crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.min.js"></script>
 </body>
-
-</html>
