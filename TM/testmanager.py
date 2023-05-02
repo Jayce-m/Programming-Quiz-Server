@@ -49,7 +49,6 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
 
         # Fill in placeholders in HTML document
         html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()
-        # FIXME: Currently need to have multiple 'test' strings at the end for some reason, probably something to do with options_html adding format identifiers
         filled_doc = html_doc % (fullName, username, curMarks,
                                 questionNum, current_question['question'], options_html)
         script_doc = open(os.path.join(basedir, 'script.html'), 'r').read()
@@ -57,9 +56,25 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
 
         # Send response to client
         httpd.wfile.write(bytes(filled_doc, 'utf-8'))
+
     elif (current_question['multiple'] == False):
-        # display the ace ide
-        return
+        # generate HTML ace editor
+        programming_html = '''<div class="d-flex justify-content-center align-items-center vh-100">
+        <div class="container">
+            <div id="editor-container">
+                <div id="editor">testing</div>
+                </div>
+            </div>
+        </div>'''
+
+        # Open html doc
+        html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()
+        # Fill in placeholders in HTML document
+        #FIXME: needs extra format specifiers in test.html
+        filled_doc = html_doc % (fullName, username, questionNum, curAttempt, curMarks, current_question['id'], current_question['question'], programming_html)
+
+        # Send response to client
+        httpd.wfile.write(bytes(filled_doc, 'utf-8'))
 
 
 

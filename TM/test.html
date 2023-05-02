@@ -10,6 +10,19 @@
             right: 10px;
             top: 5px;
         }
+        #editor { 
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+    #editor-container {
+    height: 100%;
+    min-height: 600px;
+    position: relative
+  }
+    
     </style>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css">
 </head>
@@ -55,12 +68,30 @@
 
             <button type="submit" id="submitBtn" class="btn btn-primary mt-3">Submit Answer</button>
         </form>
-        <button onclick="nextQuestion()" id="nextBtn" class="btn btn-primary mt-3">Next</button>
         <button onclick="prevQuestion()" id="backBtn" class="btn btn-primary mt-3">Back</button>
+        <button onclick="nextQuestion()" id="nextBtn" class="btn btn-primary mt-3">Next</button>
+
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.18.0/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"
         integrity="sha384-7JZKPiwyu/pnMeIKANP4JJD7b4rfqU3jL4XJFZuV7TObTn2uV7KjLTH/b/1yDkAa"
         crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/js/bootstrap.min.js"></script>
+    <script>
+        // Get a reference to the Ace Editor element
+        var editorElement = document.getElementById("editor");
+    
+        // Create an Ace Editor instance
+        var editor = ace.edit(editorElement);
+    
+        // Set theme and mode
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/java");
+    
+        // Resize the editor to fit inside the container
+        var container = document.querySelector(".container");
+        var editorContainer = document.getElementById("editor-container");
+        editor.resize(true);
+      </script>
 </body>

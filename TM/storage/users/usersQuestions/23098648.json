@@ -1,11 +1,10 @@
 [
   {
-    "question": "What is the output of the following Python code?\n\nx = 5\ndef myFunc():\n    global x\n    x = 3\nmyFunc()\nprint(x)",
-    "answer": "3",
-    "multiple": true,
-    "options": ["5", "3", "8", "Error"],
+    "id": 13,
     "language": "Python",
-    "id": 8
+    "multiple": false,
+    "question": "Create a Python program that displays integers ranging from 1 to 10, including both 1 and 10. Your program should use a class and include a main method to run the program.",
+    "answer": "for i in range(1, 11):\n\tprint(i)"
   },
   {
     "question": "Which of the following is not a data type in Python?",

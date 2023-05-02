@@ -2,7 +2,7 @@
     "23098648": {
         "fullname": "Elijah T",
         "password": "4031",
-        "question": 10,
+        "question": 1,
         "attempts": {
             "1": 1,
             "2": 1,
@@ -16,7 +16,7 @@
             "10": 1
         },
         "marks": 0,
-        "session-id": "3RQFuIQ4c1u0ZlTM7ekxyLdLIQ7hp5oN"
+        "session-id": "6zbxNYUgZnCFLvtGprqD0u4unspM4ddt"
     },
     "22751096": {
         "fullname": "John Doe",
@@ -35,6 +35,6 @@
             "10": 1
         },
         "marks": 0,
-        "session-id": "duKDdOpScZSFdjLXFcoUmcLJXEnaq6ue"
+        "session-id": ""
     }
 }
