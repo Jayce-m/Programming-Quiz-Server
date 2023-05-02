@@ -56,6 +56,22 @@
     "id": 6
   },
   {
+    "question": "Which of the following is a valid way to create a new object in Java?",
+    "answer": "MyClass myObj = new MyClass();",
+    "multiple": true,
+    "options": ["MyClass myObj = new MyClass();", "new MyClass() = myObj;", "MyClass = new myObj();", "MyClass myObj;"],
+    "language": "Java",
+    "id": 6
+  },
+  {
+    "question": "Which of the following is a valid way to create a new object in Java?",
+    "answer": "MyClass myObj = new MyClass();",
+    "multiple": true,
+    "options": ["MyClass myObj = new MyClass();", "new MyClass() = myObj;", "MyClass = new myObj();", "MyClass myObj;"],
+    "language": "Java",
+    "id": 6
+  },
+  {
     "question": "Which of the following is a valid way to declare a variable in Java?",
     "answer": "int myVar = 5;",
     "multiple": true,

@@ -30,7 +30,7 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
         data = json.load(json_file)
 
         # Get the current question
-        current_question = data[questionNum]
+        current_question = data[questionNum-1]
 
     # if the question is multiple choice then display options.
     if (current_question['multiple'] == True):
@@ -52,7 +52,7 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
         # FIXME: Currently need to have multiple 'test' strings at the end for some reason, probably something to do with options_html adding format identifiers
         filled_doc = html_doc % (fullName, username, curMarks,
                                 questionNum, current_question['question'], options_html)
-        script_doc = open(os.path.join(basedir, 'script.js'), 'r').read()
+        script_doc = open(os.path.join(basedir, 'script.html'), 'r').read()
         filled_doc = filled_doc + (script_doc % (questionNum, curAttempt))
 
         # Send response to client
@@ -100,6 +100,12 @@ class TestManager(BaseHTTPRequestHandler):
         if (self.path == '/logout'):
             # Get session ID
             cookie = self.headers.get('Cookie')
+            if cookie is None:
+                self.send_response(401)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(bytes("Session expired!", 'utf-8'))
+                return
             for c in cookie.split(';'):
                 name, value = c.strip().split('=')
                 if name == 'session-id':
@@ -169,6 +175,83 @@ class TestManager(BaseHTTPRequestHandler):
                     self.send_header('Content-type', 'text/html')
                     self.end_headers()
                     self.wfile.write(bytes("User not found!", 'utf-8'))
+        if self.path == '/next':
+            # Get session ID
+            cookie = self.headers.get('Cookie')
+            if cookie is None:
+                self.send_response(401)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(bytes("Session expired!", 'utf-8'))
+                return
+            for c in cookie.split(';'):
+                name, value = c.strip().split('=')
+                if name == 'session-id':
+                    session_id = value
+                    with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
+                        data = json.load(json_file)
+                        for user in data:
+                            if (data[user]['session-id'] == session_id):
+                                if (data[user]['question'] >= 10):
+                                    return
+                                data[user]['question'] += 1
+                                fullName = data[user]['fullname']
+                                questionNum = data[user]['question']
+                                curAttempt = data[user]['attempts'][str(questionNum)]
+                                curMarks = data[user]['marks']
+                                with open(os.path.join(basedir, 'storage/users/users.json'),'w') as outfile:
+                                    json.dump(data, outfile, indent=4)
+                                # Serve test
+                                self.send_response(200)
+                                self.send_header('Content-type', 'text/html')
+                                self.end_headers()
+                                serveTest(self, user, fullName, questionNum, curAttempt, curMarks)
+                                return
+                            else:
+                                self.send_response(401)
+                                self.send_header('Content-type', 'text/html')
+                                self.end_headers()
+                                self.wfile.write(bytes("Session expired!", 'utf-8'))
+                                return
+        if self.path == '/back':
+            # Get session ID
+            cookie = self.headers.get('Cookie')
+            if cookie is None:
+                self.send_response(401)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(bytes("Session expired!", 'utf-8'))
+                return
+            for c in cookie.split(';'):
+                name, value = c.strip().split('=')
+                if name == 'session-id':
+                    session_id = value
+                    with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
+                        data = json.load(json_file)
+                        for user in data:
+                            if (data[user]['session-id'] == session_id):
+                                if (data[user]['question'] <= 1):
+                                    return
+                                data[user]['question'] -= 1
+                                fullName = data[user]['fullname']
+                                questionNum = data[user]['question']
+                                curAttempt = data[user]['attempts'][str(questionNum)]
+                                curMarks = data[user]['marks']
+                                with open(os.path.join(basedir, 'storage/users/users.json'),'w') as outfile:
+                                    json.dump(data, outfile, indent=4)
+                                # Serve test
+                                self.send_response(200)
+                                self.send_header('Content-type', 'text/html')
+                                self.end_headers()
+                                serveTest(self, user, fullName, questionNum, curAttempt, curMarks)
+                                return
+                            else:
+                                self.send_response(401)
+                                self.send_header('Content-type', 'text/html')
+                                self.end_headers()
+                                self.wfile.write(bytes("Session expired!", 'utf-8'))
+                                return
+            return
 
 
 if __name__ == '__main__':

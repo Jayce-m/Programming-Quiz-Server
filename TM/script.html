@@ -1,0 +1,51 @@
+<script>
+  var questionNum = '%s';
+  var attempts = '%s';
+  if (attempts > 3) {
+    document.getElementById("attemptStr").innerHTML = "This is question " + questionNum + ", you have no attempts left";
+    document.getElementById("submitBtn").disabled = true;
+  } else {
+    document.getElementById("attemptStr").innerHTML = "You are on question " + questionNum + " (attempt " + attempts + "/3) out of 10";
+  }
+
+  if (questionNum >= 10) {
+    document.getElementById("nextBtn").disabled = true;
+  } else if (questionNum <= 1) {
+    document.getElementById("backBtn").disabled = true;
+  }
+
+  function nextQuestion() {
+
+    fetch('/next', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        console.log('POST request sent successfully');
+        location.reload();
+      })
+      .catch(error => {
+        console.error('Error sending POST request:', error);
+      });
+  }
+
+  function prevQuestion() {
+    fetch('/back', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        console.log('POST request sent successfully');
+        location.reload();
+      })
+      .catch(error => {
+        console.error('Error sending POST request:', error);
+      });
+  }
+</script>
+
+</html>
