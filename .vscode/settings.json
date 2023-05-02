@@ -4,8 +4,9 @@
     "lib/**/*.jar",
     "/Users/jalilinayat-hussain/Downloads/json-20230227.jar",
     "/Users/janodiweerasinghe/Downloads/json-simple-1.1.jar",
-    "/Users/janodiweerasinghe/Downloads/json-20230227.jar",
-    "QB/dependencies/json-20230227.jar",
-    "QB/dependencies/jython-2.7.3.jar"
-  ]
+    "/Users/janodiweerasinghe/Downloads/json-20230227.jar"
+  ],
+  "prettier.printWidth": 160,
+  "java.format.settings.url": ".vscode/java-formatter.xml",
+  "java.configuration.updateBuildConfiguration": "interactive"
 }
