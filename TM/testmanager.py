@@ -49,9 +49,16 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
 
         # Fill in placeholders in HTML document
         html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()
-        # FIXME: Currently need to have multiple 'test' strings at the end for some reason, probably something to do with options_html adding format identifiers
+        ace_code = """
+            <div id="editor" style="height: 300px;"></div>
+            <script>
+                var editor = ace.edit("editor");
+                editor.setTheme("ace/theme/monokai");
+                editor.session.setMode("ace/mode/javascript");
+            </script>
+        """
         filled_doc = html_doc % (fullName, username, curMarks,
-                                questionNum, current_question['question'], options_html)
+                                questionNum, current_question['question'], options_html, ace_code)
         script_doc = open(os.path.join(basedir, 'script.html'), 'r').read()
         filled_doc = filled_doc + (script_doc % (questionNum, curAttempt))
 
