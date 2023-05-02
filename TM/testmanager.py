@@ -162,7 +162,7 @@ class TestManager(BaseHTTPRequestHandler):
 
                         # Retrieve relevant information and store session ID in json
                         data[username]['session-id'] = sessionid
-                        with open('storage/users/users.json', 'w') as outfile:
+                        with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
                             json.dump(data, outfile, indent=4)
                         fullName = data[username]['fullname']
                         questionNum = data[username]['question']
