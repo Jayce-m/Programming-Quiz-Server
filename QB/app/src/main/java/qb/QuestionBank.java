@@ -257,8 +257,9 @@ public class QuestionBank {
         // Create an instance of QB to receive
         QuestionBank questionSender = new QuestionBank();
         QuestionBank questionMarker = new QuestionBank();
-
-        // questionMarker.markMultipleChoiceQuestion("jalil", "2", "char", "1");
+        String co = "public class HelloWorld {\n  public static void main(String[] args) {\n    System.out.println(\"Hello, World!\");\n  }\n}";
+        String[] ans = questionMarker.markMultipleChoiceQuestion("jalil", "14", co, "1");
+        System.out.println(Arrays.toString(ans));
         // get the address of the host and set a port to commmunicate on
         InetAddress address = InetAddress.getLocalHost();
         int port = 8000;
