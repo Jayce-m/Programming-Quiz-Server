@@ -99,7 +99,7 @@
     "id": 13,
     "language": "Python",
     "multiple": false,
-    "question": "Create a Java program that displays integers ranging from 1 to 10, including both 1 and 10. Your program should use a class and include a main method to run the program.",
+    "question": "Create a Python program that displays integers ranging from 1 to 10, including both 1 and 10. Your program should use a class and include a main method to run the program.",
     "answer": "for i in range(1, 11):\n\tprint(i)"
   },
   {

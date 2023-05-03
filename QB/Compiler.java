@@ -7,7 +7,7 @@ import javax.tools.Tool;
 import javax.tools.ToolProvider;
 import java.nio.file.*;
 import java.net.*;
-import org.json.*;
+import javax.json.*;
 
 public class Compiler {
 
