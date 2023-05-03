@@ -41,8 +41,8 @@ public class QuestionBank {
 
         String correctAnswer = allQuestion.get(id).split("\"answer\": \"")[1];
         correctAnswer = correctAnswer.substring(0, correctAnswer.length() - 2);
-        System.out.println("correct answer: " + correctAnswer);
-        return correctAnswer;
+        String expandedString = correctAnswer.replace("\\n", "\n").replace("\\t", "\t").replace("\\\"", "\"").replace("\\\\", "\\");
+        return expandedString;
     }
 
     public synchronized void generateQuestions(String userName) throws Exception {
@@ -281,7 +281,7 @@ public class QuestionBank {
         byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
         String co = new String(fileBytes, StandardCharsets.UTF_8);
 
-        String[] ans = questionMarker.markProgrammingQuestion("jalil", "15", co, "1", "Java");
+        String[] ans = questionMarker.markProgrammingQuestion("jalil", "14", co, "1", "Java");
         System.out.println(Arrays.toString(ans));
         // get the address of the host and set a port to commmunicate on
         InetAddress address = InetAddress.getLocalHost();
