@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Test Manager</title>
+  <style>
+    /* Styles for the logout button */
+    .logoutLblPos {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    /* Styles for the navbar */
+    .navbar {
+      background-color: #f8f9fa;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .navbar-brand {
+      font-weight: bold;
+      font-size: 24px;
+      color: #343a40;
+    }
+    .navbar ul {
+      list-style-type: none;
+      display: flex;
+      margin: 0;
+      padding: 0;
+    }
+    .navbar li {
+      margin-right: 20px;
+    }
+    .navbar li:last-child {
+      margin-right: 0;
+    }
+    .navbar a {
+      text-decoration: none;
+      color: #343a40;
+    }
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+    /* Styles for the question container */
+    .container {
+      margin: 50px 20px;
+    }
+    h4 {
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    label {
+      font-weight: bold;
+    }
+    .form-check {
+      margin-bottom: 10px;
+    }
+    .btn {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar">
+    <a class="navbar-brand" href="#">Test Manager</a>
+    <ul>
+      <li>
+        <a href="#">Welcome, %s (ID: %s)!</a>
+      </li>
+      <li>
+        <a href="#">
