@@ -1,14 +1,25 @@
+import socket
+import datetime
+import string
+import random
+import json
+import requestQuestions
+from urllib.parse import urlparse, parse_qs
+import http.cookies
+from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import http.cookies
-from urllib.parse import urlparse, parse_qs
-import json,random,string,datetime,socket
-import requestQuestions
 
 landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
 testpage = open(os.path.join(basedir, 'test.html'), 'r').read()
+
+# Create a TCP/IP socket
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Connect the socket to the port where the server is listening, this will need to change to the server's IP address and port
+server_address = ('localhost', 8080)
+client_socket.connect(server_address)
 
 
 def genSessionID():
@@ -19,10 +30,10 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
 
     # TODO: request questions from the question bank
     # Request questions.
-    #requestQuestions.request()
+    # requestQuestions.request()
 
     # If there exists a username.json, open and store in data
-    
+
     # iterate over the questions json file inside storage
     # TODO: change the path to the username.json
     with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
@@ -50,7 +61,7 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
         # Fill in placeholders in HTML document
         html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()
         filled_doc = html_doc % (fullName, username, curMarks,
-                                questionNum, current_question['question'], options_html)
+                                 questionNum, current_question['question'], options_html)
         script_doc = open(os.path.join(basedir, 'script.html'), 'r').read()
         filled_doc = filled_doc + (script_doc % (questionNum, curAttempt))
 
@@ -70,17 +81,15 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
         # Open html doc
         html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()
 
-
         # Fill in placeholders in HTML document
-        #FIXME: needs extra format specifiers in test.html
+        # FIXME: needs extra format specifiers in test.html
         filled_doc = html_doc % (fullName, username, curMarks,
-                                questionNum, current_question['question'], programming_html)        
+                                 questionNum, current_question['question'], programming_html)
         script_doc = open(os.path.join(basedir, 'script.html'), 'r').read()
         filled_doc = filled_doc + (script_doc % (questionNum, curAttempt))
-        
+
         # Send response to client
         httpd.wfile.write(bytes(filled_doc, 'utf-8'))
-
 
 
 class TestManager(BaseHTTPRequestHandler):
@@ -99,7 +108,8 @@ class TestManager(BaseHTTPRequestHandler):
                             if (data[user]['session-id'] == session_id):
                                 fullName = data[user]['fullname']
                                 questionNum = data[user]['question']
-                                curAttempt = data[user]['attempts'][str(questionNum)]
+                                curAttempt = data[user]['attempts'][str(
+                                    questionNum)]
                                 curMarks = data[user]['marks']
 
                                 # Serve test
@@ -136,7 +146,7 @@ class TestManager(BaseHTTPRequestHandler):
                             if (data[user]['session-id'] == session_id):
                                 # Remove session ID
                                 data[user]['session-id'] = ''
-                                with open(os.path.join(basedir, 'storage/users/users.json'),'w') as outfile:
+                                with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
                                     json.dump(data, outfile, indent=4)
                                 break
             # Serve landing page
@@ -179,7 +189,8 @@ class TestManager(BaseHTTPRequestHandler):
                             json.dump(data, outfile, indent=4)
                         fullName = data[username]['fullname']
                         questionNum = data[username]['question']
-                        curAttempt = data[username]['attempts'][str(questionNum)]
+                        curAttempt = data[username]['attempts'][str(
+                            questionNum)]
                         curMarks = data[username]['marks']
 
                         # Serve HTML page
@@ -217,15 +228,17 @@ class TestManager(BaseHTTPRequestHandler):
                                 data[user]['question'] += 1
                                 fullName = data[user]['fullname']
                                 questionNum = data[user]['question']
-                                curAttempt = data[user]['attempts'][str(questionNum)]
+                                curAttempt = data[user]['attempts'][str(
+                                    questionNum)]
                                 curMarks = data[user]['marks']
-                                with open(os.path.join(basedir, 'storage/users/users.json'),'w') as outfile:
+                                with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
                                     json.dump(data, outfile, indent=4)
                                 # Serve test
                                 self.send_response(200)
                                 self.send_header('Content-type', 'text/html')
                                 self.end_headers()
-                                serveTest(self, user, fullName, questionNum, curAttempt, curMarks)
+                                serveTest(self, user, fullName,
+                                          questionNum, curAttempt, curMarks)
                                 return
                     self.send_response(401)
                     self.send_header('Content-type', 'text/html')
@@ -253,21 +266,24 @@ class TestManager(BaseHTTPRequestHandler):
                                 data[user]['question'] -= 1
                                 fullName = data[user]['fullname']
                                 questionNum = data[user]['question']
-                                curAttempt = data[user]['attempts'][str(questionNum)]
+                                curAttempt = data[user]['attempts'][str(
+                                    questionNum)]
                                 curMarks = data[user]['marks']
-                                with open(os.path.join(basedir, 'storage/users/users.json'),'w') as outfile:
+                                with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
                                     json.dump(data, outfile, indent=4)
                                 # Serve test
                                 self.send_response(200)
                                 self.send_header('Content-type', 'text/html')
                                 self.end_headers()
-                                serveTest(self, user, fullName, questionNum, curAttempt, curMarks)
+                                serveTest(self, user, fullName,
+                                          questionNum, curAttempt, curMarks)
                                 return
                     self.send_response(401)
                     self.send_header('Content-type', 'text/html')
                     self.end_headers()
                     self.wfile.write(bytes("Session expired!", 'utf-8'))
             return
+        # if self.path == '/submit':
 
 
 if __name__ == '__main__':
