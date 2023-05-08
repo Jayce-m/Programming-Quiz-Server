@@ -1,1 +1,0 @@
-public class PrintEven Numbers {\n  public static void main(String[] args) {\n   for (int i = 2; i <=20; i += 2) {\n     System.out.println(i);\n    }\n }\n}
