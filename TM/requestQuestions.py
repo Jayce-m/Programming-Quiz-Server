@@ -9,10 +9,10 @@ SERVER_HOSTNAME = '192.168.1.105'
 SERVER_PORT = 8000
 
 # create a socket object and connect to the server
-def request():
+def connectToServer():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         print("hello")
-        s.connect((SERVER_HOSTNAME, SERVER_PORT))
+        s.connect((QB_SERVER_HOSTNAME, QB_SERVER_PORT))
         print("Socket Connected")
         # send a string message to the server
         message = '22751096 requestQuestions'

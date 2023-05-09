@@ -3,23 +3,48 @@ import datetime
 import string
 import random
 import json
-import requestQuestions
 from urllib.parse import urlparse, parse_qs
 import http.cookies
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
+
+QB_SERVER_HOSTNAME = '192.168.0.9'
+QB_SERVER_PORT = 8000
+
 basedir = os.path.abspath(os.path.dirname(__file__))
-
-
 landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
 testpage = open(os.path.join(basedir, 'test.html'), 'r').read()
 
-# Create a TCP/IP socket
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# # Create a TCP/IP socket
+# client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Connect the socket to the port where the server is listening, this will need to change to the server's IP address and port
-server_address = ('localhost', 8080)
-client_socket.connect(server_address)
+# # Connect the socket to the port where the server is listening, this will need to change to the server's IP address and port
+# server_address = ('localhost', 8080)
+# client_socket.connect(server_address)
+
+
+def sendRequestToQbServer(request, userID):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        print("Connecting to QB server...")
+        s.connect((QB_SERVER_HOSTNAME, QB_SERVER_PORT))
+        print("Connected to QB server.")
+        # send a string message to the server
+
+        request = '22751096 requestQuestions'
+        userID = 22751096
+        s.sendall(request.encode())
+
+        # receive data from the server
+        data = s.recv(4096)
+        fileName = 'storage/users/usersQuestions/' + str(userID) + '.json'
+        # Save the data to a file
+        with open(fileName, 'wb') as f:
+            f.write(data)
+
+        print('Received data saved to received_data.txt')
+
+        s.close()
+        # print the response received from the server
 
 
 def genSessionID():
@@ -288,9 +313,14 @@ class TestManager(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     try:
-        server_address = ('', 8000)
+        connectToQbServer()
+
+        print("Setting up TM server")
+        server_address = ('localhost', 8080)
         httpd = HTTPServer(server_address, TestManager)
         httpd.serve_forever()
+        print("TM Server is running")
+
     except KeyboardInterrupt:
         print('Server is terminated')
         httpd.socket.close()

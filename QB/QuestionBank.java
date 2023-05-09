@@ -74,7 +74,7 @@ public class QuestionBank {
             }
         }
 
-        FileWriter fileWriter = new FileWriter(userName + ".json");
+        FileWriter fileWriter = new FileWriter("resources/usersQuestions/" + userName + ".json");
         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
         bufferedWriter.write(usersQuestions.toString());
         bufferedWriter.close();
@@ -276,16 +276,18 @@ public class QuestionBank {
         QuestionBank questionSender = new QuestionBank();
         QuestionBank questionMarker = new QuestionBank();
         
-        String filePath = "test.txt";
-        byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
-        String co = new String(fileBytes, StandardCharsets.UTF_8);
+        // String filePath = "test.txt";
+        // byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
+        // String co = new String(fileBytes, StandardCharsets.UTF_8);
 
-        String[] ans = questionMarker.markProgrammingQuestion("jalil", "14", co, "1", "Java");
-        System.out.println(Arrays.toString(ans));
+        // String[] ans = questionMarker.markProgrammingQuestion("jalil", "14", co, "1", "Java");
+        // System.out.println(Arrays.toString(ans));
+
         // get the address of the host and set a port to commmunicate on
         InetAddress address = InetAddress.getLocalHost();
         int port = 8000;
         System.out.println("\n\033[32mYour address: " + address + "\033[0m\n");
+        System.out.println("\033[32mYour port: " + port + "\033[0m\n");
 
         // Create a ServerSocket to communicate with TM
         @SuppressWarnings("resource")
@@ -298,14 +300,17 @@ public class QuestionBank {
             Socket clientSocket = serverSocket.accept();
             System.out.println("\033[34mClient connected: " + clientSocket.getInetAddress() + "\033[0m\n");
 
+            String request = "";
+
             // Read in client's request
+            
             InputStream inputStream = clientSocket.getInputStream();
             byte[] buffer = new byte[1024];
             int length = inputStream.read(buffer);
-
-            String request = new String(buffer, 0, length);
+            request = new String(buffer, 0, length);
             System.out.println("\033[34mRequest received: " + request + "\033[0m\n");
-
+            
+            
             // For a request for questions the request should be in the format:
             // "<UserID> requestQuestions"
 
@@ -315,7 +320,6 @@ public class QuestionBank {
             // For a request for programming question to be marked the request should be in
             // the format:
             // "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
-
             String[] requestArray = request.split(" ", 6);
             String userID = requestArray[0];
             String requestType = requestArray[1];
@@ -327,6 +331,7 @@ public class QuestionBank {
                     System.out.println("\033[34mQuestions requested\033[0m\n");
                     questionSender.generateQuestions(userID);
                     questionSender.sendQuestionsToTM(clientSocket, userID);
+                    clientSocket.close();
                     break;
                 case "requestMCQMarking":
                     questionID = requestArray[2];
