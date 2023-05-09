@@ -46,6 +46,23 @@
         console.error('Error sending POST request:', error);
       });
   }
+
+  function submitAnswer() {
+    let data = document.querySelector('input[name="answer"]:checked').value;
+    fetch('/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+      .then(response => {
+        console.log('POST request sent successfully');
+      })
+      .catch(error => {
+        console.error('Error sending POST request:', error);
+      });
+  }
 </script>
 
 </html>
