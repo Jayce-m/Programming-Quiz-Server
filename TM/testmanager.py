@@ -8,7 +8,7 @@ import http.cookies
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 
-QB_SERVER_HOSTNAME = '127.0.0.1'
+QB_SERVER_HOSTNAME = '10.135.149.248'
 QB_SERVER_PORT = 8000
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -21,8 +21,6 @@ def sendRequestToQbServer(request):
         print("Connecting to QB server...")
         s.connect((QB_SERVER_HOSTNAME, QB_SERVER_PORT))
         print("Connected to QB server.")
-        # send a string message to the server
-
         if (request.split()[1] == 'requestQuestions'):
             s.sendall(request.encode())
             data = s.recv(4096)
@@ -30,6 +28,10 @@ def sendRequestToQbServer(request):
                 request.split()[0] + '.json'
             with open(fileName, 'wb') as f:
                 f.write(data)
+        elif (request.split()[1] == 'requestMCQMarking'):
+            s.sendall(request.encode())
+            data = s.recv(4096)
+            print("Received response from QB server." + str(data))
         s.close()
 
 
@@ -37,19 +39,17 @@ def genSessionID():
     return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(32))
 
 
-def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
-
-    # TODO: request questions from the question bank
-    # Request questions.
-    # requestQuestions.request()
-
-    # If there exists a username.json, open and store in data
-
-    # iterate over the questions json file inside storage
-    request = username + " requestQuestions"
-
-    sendRequestToQbServer(request)
-
+def serveTest(httpd, username):
+    with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
+        data = json.load(json_file)
+        fullName = data[username]['fullname']
+        questionNum = data[username]['question']
+        curAttempt = data[username]['attempts'][str(
+            questionNum)]
+        curMarks = data[username]['marks']
+    if os.path.isfile(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) == False:
+        request = username + " requestQuestions"
+        sendRequestToQbServer(request)
     with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
         # Load the questions from the file
         data = json.load(json_file)
@@ -120,18 +120,11 @@ class TestManager(BaseHTTPRequestHandler):
                         data = json.load(json_file)
                         for user in data:
                             if (data[user]['session-id'] == session_id):
-                                fullName = data[user]['fullname']
-                                questionNum = data[user]['question']
-                                curAttempt = data[user]['attempts'][str(
-                                    questionNum)]
-                                curMarks = data[user]['marks']
-
                                 # Serve test
                                 self.send_response(200)
                                 self.send_header('Content-type', 'text/html')
                                 self.end_headers()
-                                serveTest(self, user, fullName,
-                                          questionNum, curAttempt, curMarks)
+                                serveTest(self, user)
                                 return
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
@@ -201,15 +194,9 @@ class TestManager(BaseHTTPRequestHandler):
                         data[username]['session-id'] = sessionid
                         with open('storage/users/users.json', 'w') as outfile:
                             json.dump(data, outfile, indent=4)
-                        fullName = data[username]['fullname']
-                        questionNum = data[username]['question']
-                        curAttempt = data[username]['attempts'][str(
-                            questionNum)]
-                        curMarks = data[username]['marks']
 
                         # Serve HTML page
-                        serveTest(self, username, fullName,
-                                  questionNum, curAttempt, curMarks)
+                        serveTest(self, username)
                     else:
                         self.send_response(401)
                         self.send_header('Content-type', 'text/html')
@@ -240,19 +227,13 @@ class TestManager(BaseHTTPRequestHandler):
                                 if (data[user]['question'] >= 10):
                                     return
                                 data[user]['question'] += 1
-                                fullName = data[user]['fullname']
-                                questionNum = data[user]['question']
-                                curAttempt = data[user]['attempts'][str(
-                                    questionNum)]
-                                curMarks = data[user]['marks']
                                 with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
                                     json.dump(data, outfile, indent=4)
                                 # Serve test
                                 self.send_response(200)
                                 self.send_header('Content-type', 'text/html')
                                 self.end_headers()
-                                serveTest(self, user, fullName,
-                                          questionNum, curAttempt, curMarks)
+                                serveTest(self, user)
                                 return
                     self.send_response(401)
                     self.send_header('Content-type', 'text/html')
@@ -278,19 +259,13 @@ class TestManager(BaseHTTPRequestHandler):
                                 if (data[user]['question'] <= 1):
                                     return
                                 data[user]['question'] -= 1
-                                fullName = data[user]['fullname']
-                                questionNum = data[user]['question']
-                                curAttempt = data[user]['attempts'][str(
-                                    questionNum)]
-                                curMarks = data[user]['marks']
                                 with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
                                     json.dump(data, outfile, indent=4)
                                 # Serve test
                                 self.send_response(200)
                                 self.send_header('Content-type', 'text/html')
                                 self.end_headers()
-                                serveTest(self, user, fullName,
-                                          questionNum, curAttempt, curMarks)
+                                serveTest(self, user)
                                 return
                     self.send_response(401)
                     self.send_header('Content-type', 'text/html')
@@ -299,6 +274,39 @@ class TestManager(BaseHTTPRequestHandler):
             return
         if self.path == '/submit':
             print("Submitting question")
+            # Get answer from post
+            content_length = int(self.headers['Content-Length'])
+            answer = self.rfile.read(content_length).decode('utf-8')
+            # Get session ID
+            cookie = self.headers.get('Cookie')
+            if cookie is None:
+                self.send_response(401)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(bytes("Session expired!", 'utf-8'))
+                return
+            for c in cookie.split(';'):
+                name, value = c.strip().split('=')
+                if name == 'session-id':
+                    session_id = value
+                    with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
+                        data = json.load(json_file)
+                        for user in data:
+                            if (data[user]['session-id'] == session_id):
+                                # Get the current question
+                                questionNum = data[user]['question']
+                                # Get the current attempt
+                                with open(os.path.join(basedir, 'storage/users/usersQuestions/' + user + '.json')) as json_file:
+                                    qData = json.load(json_file)
+                                    current_question = qData[questionNum-1]
+                                    curAttempt = data[user]['attempts'][str(questionNum)]
+                                    if (current_question['multiple'] == True):
+                                        request = user +' requestMCQMarking '+str(current_question['id'])+' '+str(curAttempt)+' '+str.replace(answer, '"', '')
+                                        sendRequestToQbServer(request)
+                                        self.send_response(200)
+                                        self.send_header('Content-type', 'text/html')
+                                        self.end_headers()
+                                        serveTest(self, user)
             # if last question then display all results
 
 
