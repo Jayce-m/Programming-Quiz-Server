@@ -36,7 +36,7 @@ public class QuestionBank {
 
     public synchronized String getQuestionAnswer(String questionId) {
         List<String> allQuestion = convertJsonFileToArray("resources/questions/questions.json");
-        int id = Integer.parseInt(questionId) - 1; // Question ID starts at 1;
+        int id = Integer.parseInt(questionId) - 2; // Question ID starts at 1;
 
         String correctAnswer = allQuestion.get(id).split("\"answer\": \"")[1];
         correctAnswer = correctAnswer.substring(0, correctAnswer.length() - 2);
@@ -136,6 +136,9 @@ public class QuestionBank {
 
         String marks = "";
         String message = "";
+        
+        System.out.println("Correct answer: " + correctAnswer);
+        System.out.println("User's answer: " + usersAnswer);
 
         if (correctAnswer.equals(usersAnswer)) {
             message = "Correct!";
@@ -320,7 +323,7 @@ public class QuestionBank {
             // For a request for programming question to be marked the request should be in
             // the format:
             // "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
-            String[] requestArray = request.split(" ", 6);
+            String[] requestArray = request.split(" ", 5);
             String userID = requestArray[0];
             String requestType = requestArray[1];
             String questionID;
@@ -337,6 +340,7 @@ public class QuestionBank {
                     questionID = requestArray[2];
                     attempts = requestArray[3];
                     String answer = requestArray[4];
+                    System.out.println(answer);
                     System.out.println("\033[34mMCQ marking requested\033[0m\n");
                     String[] output = questionMarker.markMultipleChoiceQuestion(userID, questionID, answer, attempts);
                     if (output[3] == "Correct!") {
