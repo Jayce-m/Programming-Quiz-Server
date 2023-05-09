@@ -8,7 +8,7 @@ import http.cookies
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 
-QB_SERVER_HOSTNAME = '10.135.143.188'
+QB_SERVER_HOSTNAME = '10.135.149.248'
 QB_SERVER_PORT = 8050
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -16,7 +16,7 @@ landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
 testpage = open(os.path.join(basedir, 'test.html'), 'r').read()
 
 
-def sendRequestToQbServer(request):
+def sendRequestToQbServer(request,httpd):
     # For a request for questions the request should be in the format:
     # "<UserID> requestQuestions"
 
@@ -118,7 +118,7 @@ def serveTest(httpd, username):
         curMarks = data[username]['marks']
     if os.path.isfile(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) == False:
         request = username + " requestQuestions"
-        sendRequestToQbServer(request)
+        sendRequestToQbServer(request,httpd)
     with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
         # Load the questions from the file
         data = json.load(json_file)
@@ -376,7 +376,7 @@ class TestManager(BaseHTTPRequestHandler):
                                         request = user + ' requestMCQMarking ' + \
                                             str(current_question['id'])+' '+str(
                                                 curAttempt)+' '+str.replace(answer, '"', '')
-                                        sendRequestToQbServer(request)
+                                        sendRequestToQbServer(request,self)
                                         self.send_response(200)
                                         self.send_header(
                                             'Content-type', 'text/html')

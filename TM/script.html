@@ -60,10 +60,10 @@
         console.log('POST request sent successfully');
         console.log(response.body);
         if (response.status == 200) {
-          alert("Correct!");
           document.getElementById("submitBtn").disabled = true;
+          document.getElementById("attemptStr").innerHTML = "This is question " + questionNum + ", you have no attempts left";
+          alert("Correct!");
         } else {
-          alert("Incorrect, try again")
           attempts = parseInt(attempts) + 1;
           if (parseInt(attempts) > 3) {
             document.getElementById("submitBtn").disabled = true;
@@ -71,6 +71,7 @@
           } else {
             document.getElementById("attemptStr").innerHTML = "You are on question " + questionNum + " (attempt " + attempts + "/3) out of 10";
           }
+          alert("Incorrect, try again")
         }
       })
       .catch(error => {

@@ -117,6 +117,13 @@
     "answer": "public class PrintEven Numbers {\n  public static void main(String[] args) {\n   for (int i = 2; i <=20; i += 2) {\n     System.out.println(i);\n    }\n }\n}"
   },
   {
+    "id": 16,
+    "language": "Java",
+    "multiple": false,
+    "question": "Create a Java program that displays the first 10 even numbers. Your program should include a class and a main method to run the program.",
+    "answer": "public class PrintEven Numbers {\n  public static void main(String[] args) {\n   for (int i = 2; i <=20; i += 2) {\n     System.out.println(i);\n    }\n }\n}"
+  },
+  {
   "id": 17,
   "language": "Python",
   "multiple": true,
