@@ -3,7 +3,7 @@ import datetime
 import string
 import random
 import json
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import parse_qs
 import http.cookies
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
@@ -17,6 +17,15 @@ testpage = open(os.path.join(basedir, 'test.html'), 'r').read()
 
 
 def sendRequestToQbServer(request):
+    # For a request for questions the request should be in the format:
+    # "<UserID> requestQuestions"
+
+    # For a request for MCQ to be marked the request should be in the format:
+    # "<UserID> requestMCQMarking <QuestionID> <attempts> <answer>"
+
+    # For a request for programming question to be marked the request should be in the format:
+    # "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
+
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         print("Connecting to QB server...")
         s.connect((QB_SERVER_HOSTNAME, QB_SERVER_PORT))
@@ -30,6 +39,10 @@ def sendRequestToQbServer(request):
                 request.split()[0] + '.json'
             with open(fileName, 'wb') as f:
                 f.write(data)
+        if (request.split()[1] == 'markMCQMarking'):
+            s.sendall(request.encode())
+        if (request.splti()[1] == 'requestPQMarking'):
+            s.sendall(request.encode())
         s.close()
 
 
