@@ -16,28 +16,21 @@ landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
 testpage = open(os.path.join(basedir, 'test.html'), 'r').read()
 
 
-def sendRequestToQbServer():
+def sendRequestToQbServer(request):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         print("Connecting to QB server...")
         s.connect((QB_SERVER_HOSTNAME, QB_SERVER_PORT))
         print("Connected to QB server.")
         # send a string message to the server
 
-        request = '22751096 requestQuestions'
-        userID = 22751096
-        s.sendall(request.encode())
-
-        # receive data from the server
-        data = s.recv(4096)
-        fileName = 'storage/users/usersQuestions/' + str(userID) + '.json'
-        # Save the data to a file
-        with open(fileName, 'wb') as f:
-            f.write(data)
-
-        print('Received data saved to received_data.txt')
-
+        if (request.split()[1] == 'requestQuestions'):
+            s.sendall(request.encode())
+            data = s.recv(4096)
+            fileName = 'storage/users/usersQuestions/' + \
+                request.split()[0] + '.json'
+            with open(fileName, 'wb') as f:
+                f.write(data)
         s.close()
-        # print the response received from the server
 
 
 def genSessionID():
@@ -53,7 +46,10 @@ def serveTest(httpd, username, fullName, questionNum, curAttempt, curMarks):
     # If there exists a username.json, open and store in data
 
     # iterate over the questions json file inside storage
-    # TODO: change the path to the username.json
+    request = username + " requestQuestions"
+
+    sendRequestToQbServer(request)
+
     with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
         # Load the questions from the file
         data = json.load(json_file)
@@ -308,8 +304,6 @@ class TestManager(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     try:
-        sendRequestToQbServer()
-
         print("Setting up TM server")
         server_address = ('localhost', 8080)
         httpd = HTTPServer(server_address, TestManager)
