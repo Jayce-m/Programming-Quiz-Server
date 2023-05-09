@@ -8,8 +8,8 @@ import http.cookies
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 
-QB_SERVER_HOSTNAME = '10.135.149.248'
-QB_SERVER_PORT = 8000
+QB_SERVER_HOSTNAME = '127.0.0.1'
+QB_SERVER_PORT = 8050
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
@@ -312,12 +312,16 @@ class TestManager(BaseHTTPRequestHandler):
                                 with open(os.path.join(basedir, 'storage/users/usersQuestions/' + user + '.json')) as json_file:
                                     qData = json.load(json_file)
                                     current_question = qData[questionNum-1]
-                                    curAttempt = data[user]['attempts'][str(questionNum)]
+                                    curAttempt = data[user]['attempts'][str(
+                                        questionNum)]
                                     if (current_question['multiple'] == True):
-                                        request = user +' requestMCQMarking '+str(current_question['id'])+' '+str(curAttempt)+' '+str.replace(answer, '"', '')
+                                        request = user + ' requestMCQMarking ' + \
+                                            str(current_question['id'])+' '+str(
+                                                curAttempt)+' '+str.replace(answer, '"', '')
                                         sendRequestToQbServer(request)
                                         self.send_response(200)
-                                        self.send_header('Content-type', 'text/html')
+                                        self.send_header(
+                                            'Content-type', 'text/html')
                                         self.end_headers()
                                         serveTest(self, user)
             # if last question then display all results

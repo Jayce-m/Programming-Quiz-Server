@@ -1,1 +1,71 @@
-[{"id": 1,"language": "Java","multiple": true,"question": "Which of the following statements is true about the String class in Java?","options": ["String objects are mutable.", "String objects are immutable.", "String objects can only contain alphabetic characters.", "String objects can only be created using a constructor."],"answer": "String objects are immutable."}, {"id": 27,"language": "Python","multiple": true,"question": "Which of the following is a valid way to read input from the user in Python?","options": ["input()", "raw_input()", "readline()", "All of the above"],"answer": "input()"}, {"id": 8,"language": "Python","multiple": true,"question": "What is the output of the following Python code?\n\nx = 5\ndef myFunc():\n    global x\n    x = 3\nmyFunc()\nprint(x)","options": ["5", "3", "8", "Error"],"answer": "3"}, {"id": 2,"language": "Python","multiple": true,"question": "Which of the following is not a data type in Python?","options": ["int", "float", "boolean", "char"],"answer": "char"}, {"id": 22,"language": "Python","multiple": true,"question": "Which of the following is a valid way to declare a list in Python?","options": ["list1 = [1, 2, 3]", "list2 = (1, 2, 3)", "list3 = {1, 2, 3}", "All of the above"],"answer": "list1 = [1, 2, 3]"}, {"id": 5,"language": "Python","multiple": true,"question": "What is the output of the following Python code?\n\nx = [1, 2, 3]\ny = x\nx.append(4)\nprint(y)","options": ["[1, 2, 3]", "[1, 2, 3, 4]", "[1, 2, 4]", "[1, 2, 4, 3]"],"answer": "[1, 2, 3, 4]"}, {"id": 32,"language": "Python","multiple": true,"question": "Which of the following is a valid way to remove an element from a list in Python?","options": ["my_list.remove(element)", "del my_list[index]", "my_list.pop()", "All of the above"],"answer": "All of the above"}, {"id": 28,"language": "Python","multiple": true,"question": "What is the output of the following Python code snippet?\n\nmy_list = ['apple', 'banana', 'cherry']\nprint(my_list[1:])","options": ["['banana', 'cherry']", "['apple', 'banana']", "['cherry', 'banana', 'apple']", "None of the above"],"answer": "['banana', 'cherry']"}]
+[
+  {
+    "id": 1,
+    "language": "Java",
+    "multiple": true,
+    "question": "Which of the following statements is true about the String class in Java?",
+    "options": [
+      "String objects are mutable.",
+      "String objects are immutable.",
+      "String objects can only contain alphabetic characters.",
+      "String objects can only be created using a constructor."
+    ],
+    "answer": "String objects are immutable."
+  },
+  {
+    "id": 27,
+    "language": "Python",
+    "multiple": true,
+    "question": "Which of the following is a valid way to read input from the user in Python?",
+    "options": ["input()", "raw_input()", "readline()", "All of the above"],
+    "answer": "input()"
+  },
+  {
+    "id": 8,
+    "language": "Python",
+    "multiple": true,
+    "question": "What is the output of the following Python code?\n\nx = 5\ndef myFunc():\n    global x\n    x = 3\nmyFunc()\nprint(x)",
+    "options": ["5", "3", "8", "Error"],
+    "answer": "3"
+  },
+  {
+    "id": 2,
+    "language": "Python",
+    "multiple": true,
+    "question": "Which of the following is not a data type in Python?",
+    "options": ["int", "float", "boolean", "char"],
+    "answer": "char"
+  },
+  {
+    "id": 22,
+    "language": "Python",
+    "multiple": true,
+    "question": "Which of the following is a valid way to declare a list in Python?",
+    "options": ["list1 = [1, 2, 3]", "list2 = (1, 2, 3)", "list3 = {1, 2, 3}", "All of the above"],
+    "answer": "list1 = [1, 2, 3]"
+  },
+  {
+    "id": 5,
+    "language": "Python",
+    "multiple": true,
+    "question": "What is the output of the following Python code?\n\nx = [1, 2, 3]\ny = x\nx.append(4)\nprint(y)",
+    "options": ["[1, 2, 3]", "[1, 2, 3, 4]", "[1, 2, 4]", "[1, 2, 4, 3]"],
+    "answer": "[1, 2, 3, 4]"
+  },
+  {
+    "id": 32,
+    "language": "Python",
+    "multiple": true,
+    "question": "Which of the following is a valid way to remove an element from a list in Python?",
+    "options": ["my_list.remove(element)", "del my_list[index]", "my_list.pop()", "All of the above"],
+    "answer": "All of the above"
+  },
+  {
+    "id": 28,
+    "language": "Python",
+    "multiple": true,
+    "question": "What is the output of the following Python code snippet?\n\nmy_list = ['apple', 'banana', 'cherry']\nprint(my_list[1:])",
+    "options": ["['banana', 'cherry']", "['apple', 'banana']", "['cherry', 'banana', 'apple']", "None of the above"],
+    "answer": "['banana', 'cherry']"
+  }
+]

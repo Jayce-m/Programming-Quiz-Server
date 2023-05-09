@@ -11,6 +11,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+// TODO
+// 1. Change the program to send the questions without the answer
+// 2. Clean up the code and right comments
+
+
 public class QuestionBank {
 
     public synchronized List<String> convertJsonFileToArray(String fileName) {
@@ -36,8 +41,7 @@ public class QuestionBank {
 
     public synchronized String getQuestionAnswer(String questionId) {
         List<String> allQuestion = convertJsonFileToArray("resources/questions/questions.json");
-        int id = Integer.parseInt(questionId) - 1; // Question ID starts at 1;
-
+        int id = Integer.parseInt(questionId) - 2; // Question ID starts at 1;
         String correctAnswer = allQuestion.get(id).split("\"answer\": \"")[1];
         correctAnswer = correctAnswer.substring(0, correctAnswer.length() - 2);
         String expandedString = correctAnswer.replace("\\n", "\n").replace("\\t", "\t").replace("\\\"", "\"").replace("\\\\", "\\");
@@ -71,6 +75,8 @@ public class QuestionBank {
             }
             if (!(inArrayAlready)) {
                 usersQuestions.add(allQuestions.get(randomNumber));
+            } else {
+                i--;
             }
         }
 
@@ -133,7 +139,7 @@ public class QuestionBank {
         // returns true or false
 
         String correctAnswer = getQuestionAnswer(questionId);
-
+        
         String marks = "";
         String message = "";
 
@@ -285,7 +291,7 @@ public class QuestionBank {
 
         // get the address of the host and set a port to commmunicate on
         InetAddress address = InetAddress.getLocalHost();
-        int port = 8000;
+        int port = 8050;
         System.out.println("\n\033[32mYour address: " + address + "\033[0m\n");
         System.out.println("\033[32mYour port: " + port + "\033[0m\n");
 
