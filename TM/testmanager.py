@@ -8,7 +8,7 @@ import http.cookies
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 
-QB_SERVER_HOSTNAME = '192.168.0.9'
+QB_SERVER_HOSTNAME = '127.0.0.1'
 QB_SERVER_PORT = 8000
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -16,7 +16,7 @@ landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
 testpage = open(os.path.join(basedir, 'test.html'), 'r').read()
 
 
-def sendRequestToQbServer(request, userID):
+def sendRequestToQbServer():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         print("Connecting to QB server...")
         s.connect((QB_SERVER_HOSTNAME, QB_SERVER_PORT))
@@ -308,7 +308,7 @@ class TestManager(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     try:
-        connectToQbServer()
+        sendRequestToQbServer()
 
         print("Setting up TM server")
         server_address = ('localhost', 8080)
