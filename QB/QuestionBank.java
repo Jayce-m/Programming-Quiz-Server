@@ -41,7 +41,8 @@ public class QuestionBank {
 
     public synchronized String getQuestionAnswer(String questionId) {
         List<String> allQuestion = convertJsonFileToArray("resources/questions/questions.json");
-        int id = Integer.parseInt(questionId) - 2; // Question ID starts at 1;
+        int id = Integer.parseInt(questionId) - 1; // Question ID starts at 1;
+
         String correctAnswer = allQuestion.get(id).split("\"answer\": \"")[1];
         correctAnswer = correctAnswer.substring(0, correctAnswer.length() - 2);
         String expandedString = correctAnswer.replace("\\n", "\n").replace("\\t", "\t").replace("\\\"", "\"").replace("\\\\", "\\");

@@ -40,11 +40,52 @@ def sendRequestToQbServer(request):
         elif (request.split()[1] == 'requestMCQMarking'):
             s.sendall(request.encode())
             data = s.recv(4096)
-            print("Received response from QB server." + str(data))
-        if (request.split()[1] == 'markMCQMarking'):
-            s.sendall(request.encode())
-        if (request.splti()[1] == 'requestPQMarking'):
-            s.sendall(request.encode())
+            data = data.decode("utf-8")
+            print("Received response from QB server." + data)
+            data = data.split(',',3)
+            username = data[0]
+            questionId = data[1]
+            marksReceived = data[2]
+            answer = data[3]
+            questionNum = 0
+            with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
+                data = json.load(json_file)
+                questionNumId = -1
+                for question in data:
+                    questionNumId += 1
+                    if (str(question['id']) == str(questionId)):
+                        questionNum = questionNumId
+                        break
+            print("Username" + username)
+            print("Question ID: " + questionId)
+            print("Question Num: " + str(questionNum))
+            print("Marks Received: " + marksReceived)
+            print("Answer: " + answer)
+            with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
+                if answer.find("Incorrect") != -1:
+                    httpd.send_response(401)
+                    httpd.send_header('Content-Type', 'application/json')
+                    httpd.end_headers()
+                    httpd.wfile.write(bytes("incorrect", 'utf-8'))
+                    data = json.load(json_file)
+                    data[username]['attempts'][str(questionNum+1)] += 1
+                    if (data[username]['attempts'][str(questionNum+1)] == 4):
+                        print("show answer")
+                    with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
+                        json.dump(data, outfile, indent=4)
+                    return
+                if answer.find("Correct") != -1:
+                    data = json.load(json_file)
+                    data[username]['marks'] += int(marksReceived)
+                    data[username]['attempts'][str(questionNum+1)] = 4
+                    print("show answer correct")
+                    with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
+                        json.dump(data, outfile, indent=4)
+                    httpd.send_response(200)
+                    httpd.send_header('Content-Type', 'application/json')
+                    httpd.end_headers()
+                    httpd.wfile.write(bytes("correct", 'utf-8'))
+                    return
         s.close()
 
 
