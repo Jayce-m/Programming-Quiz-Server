@@ -16,7 +16,7 @@ landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
 testpage = open(os.path.join(basedir, 'test.html'), 'r').read()
 
 
-def sendRequestToQbServer(request):
+def sendRequestToQbServer(request,httpd):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         print("Connecting to QB server...")
         s.connect((QB_SERVER_HOSTNAME, QB_SERVER_PORT))
@@ -31,7 +31,52 @@ def sendRequestToQbServer(request):
         elif (request.split()[1] == 'requestMCQMarking'):
             s.sendall(request.encode())
             data = s.recv(4096)
-            print("Received response from QB server." + str(data))
+            data = data.decode("utf-8")
+            print("Received response from QB server." + data)
+            data = data.split(',')
+            username = data[0]
+            questionId = data[1]
+            questionNum = 0
+            with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
+                data = json.load(json_file)
+                questionNumId = -1
+                for question in data:
+                    questionNumId += 1
+                    if (str(question['id']) == str(questionId)):
+                        questionNum = questionNumId
+                        break
+            marksReceived = data[2]
+            answer = data[3]
+            print("Username" + str(username))
+            print("Question ID: " + str(questionId))
+            print("Question Num: " + str(questionNum))
+            print("Marks Received: " + str(marksReceived))
+            print("Answer: " + str(answer))
+            with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
+                if answer == "Incorrect":
+                    httpd.send_response(401)
+                    httpd.send_header('Content-Type', 'application/json')
+                    httpd.end_headers()
+                    httpd.wfile.write("incorrect")
+                    data = json.load(json_file)
+                    data[username]['attempts'][questionNum] += 1
+                    if (data[username]['attempts'][questionNum] == 4):
+                        print("show answer")
+                    with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
+                        json.dump(data, outfile, indent=4)
+                    return
+                if answer == "Correct!":
+                    data = json.load(json_file)
+                    data[username]['marks'] += marksReceived
+                    data[username]['attempts'][questionNum] = 4
+                    print("show answer correct")
+                    with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
+                        json.dump(data, outfile, indent=4)
+                    httpd.send_response(200)
+                    httpd.send_header('Content-Type', 'application/json')
+                    httpd.end_headers()
+                    httpd.wfile.write("correct")
+                    return
         s.close()
 
 
@@ -49,7 +94,7 @@ def serveTest(httpd, username):
         curMarks = data[username]['marks']
     if os.path.isfile(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) == False:
         request = username + " requestQuestions"
-        sendRequestToQbServer(request)
+        sendRequestToQbServer(request,"")
     with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
         # Load the questions from the file
         data = json.load(json_file)
@@ -302,11 +347,7 @@ class TestManager(BaseHTTPRequestHandler):
                                     curAttempt = data[user]['attempts'][str(questionNum)]
                                     if (current_question['multiple'] == True):
                                         request = user +' requestMCQMarking '+str(current_question['id'])+' '+str(curAttempt)+' '+str.replace(answer, '"', '')
-                                        sendRequestToQbServer(request)
-                                        self.send_response(200)
-                                        self.send_header('Content-type', 'text/html')
-                                        self.end_headers()
-                                        serveTest(self, user)
+                                        sendRequestToQbServer(request,self)
             # if last question then display all results
 
 
