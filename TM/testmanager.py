@@ -57,11 +57,12 @@ def sendRequestToQbServer(request,httpd):
             answer = data[3]
             
         elif (request.split()[1] == 'requestMCQMarking'):
+            #Send the request, and then receive and decode the data
             s.sendall(request.encode())
             data = s.recv(4096)
             data = data.decode("utf-8")
             print("Received response from QB server." + data)
-            # Response from QB is delimited by commas
+            # Response from QB is delimited by commas; get all the response variables
             data = data.split(',',3)
             username = data[0]
             questionId = data[1]
@@ -69,38 +70,44 @@ def sendRequestToQbServer(request,httpd):
             answer = data[3]
             #FIXME: What is this used for?
             questionNum = 0
-
+            #Open the users file
             with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
                 data = json.load(json_file)
-                #FIXME: What is the purpose of this? Could this not be 
                 questionNumId = -1
-                # For every question in the questions file (USERID.json)
+                #Convert the question ID (questions.json) into the users question number (23098648.json)
                 for question in data:
                     questionNumId += 1
                     # Question id the id of the current question the user is on
                     if (str(question['id']) == str(questionId)):
                         questionNum = questionNumId
                         break
+            #Open the user database
             with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
+                #If the answer is incorrect
                 if answer.find("Incorrect") != -1:
+                    #Send the message generated from the QuestionBank server to the user
                     httpd.send_response_only(403)
                     httpd.send_header('Content-type', 'application/json')
                     httpd.end_headers()
                     response = {'message': answer}
                     httpd.wfile.write(json.dumps(response).encode())
                     data = json.load(json_file)
+                    #Increment the number of attempts for the question
                     data[username]['attempts'][str(questionNum+1)] += 1
-                    if (data[username]['attempts'][str(questionNum+1)] == 4):
-                        print("show answer")
+                    #Save the information
                     with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
                         json.dump(data, outfile, indent=4)
                     return
+                #If the answer is correct
                 if answer.find("Correct") != -1:
                     data = json.load(json_file)
+                    #Add to the users marks (calculated from the questionbank)
                     data[username]['marks'] += int(marksReceived)
                     data[username]['attempts'][str(questionNum+1)] = 4
+                    #Save the information
                     with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
                         json.dump(data, outfile, indent=4)
+                    #Send the message generated from the QuestionBank server to the user
                     httpd.send_response_only(200)
                     httpd.send_header('Content-type', 'application/json')
                     httpd.end_headers()
