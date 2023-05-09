@@ -15,13 +15,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
 testpage = open(os.path.join(basedir, 'test.html'), 'r').read()
 
-# # Create a TCP/IP socket
-# client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# # Connect the socket to the port where the server is listening, this will need to change to the server's IP address and port
-# server_address = ('localhost', 8080)
-# client_socket.connect(server_address)
-
 
 def sendRequestToQbServer(request, userID):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -308,7 +301,9 @@ class TestManager(BaseHTTPRequestHandler):
                     self.end_headers()
                     self.wfile.write(bytes("Session expired!", 'utf-8'))
             return
-        # if self.path == '/submit':
+        if self.path == '/submit':
+            print("Submitting question")
+            # if last question then display all results
 
 
 if __name__ == '__main__':
