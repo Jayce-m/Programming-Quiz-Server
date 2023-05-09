@@ -110,20 +110,20 @@ public class QuestionBank {
     }
 
     public synchronized void sendPQMarkingToTM(Socket clientSocket, String request) throws Exception {
-    // Creates an output stream and sends the current
-    // userName, QuestionID, marksAwarded, and a message to indicate if they were
-    // correct/incorrect
-    // or exceeded the number of attempts and therefore returns the expected answer
-    OutputStream mcqOut = clientSocket.getOutputStream();
-    mcqOut.write((request).getBytes());
-    
-    mcqOut.flush();
-    mcqOut.close();
+        // Creates an output stream and sends the current
+        // userName, QuestionID, marksAwarded, and a message to indicate if they were
+        // correct/incorrect
+        // or exceeded the number of attempts and therefore returns the expected answer
+        OutputStream mcqOut = clientSocket.getOutputStream();
+        mcqOut.write((request).getBytes());
+        
+        mcqOut.flush();
+        mcqOut.close();
 
-    // Close the socket
-    clientSocket.close();
+        // Close the socket
+        clientSocket.close();
 
-}
+    }
 
     public synchronized void sendQuestionsToTM(Socket clientSocket, String userName) throws Exception {
         // uses sockets to send questions to task manager
@@ -199,10 +199,14 @@ public class QuestionBank {
         String correctOutput;
 
         if (language.equals("Python")) {
+            System.out.println("\nRunning users code\n");
             usersOutput = runPythonCode(usersAnswer);
+            System.out.println("\nRunning answer code\n");
             correctOutput = runPythonCode(correctCode);
         } else {
+            System.out.println("\nRunning users code\n");
             usersOutput = runJavaCode(usersAnswer);
+            System.out.println("\nRunning answer code\n");
             correctOutput = runJavaCode(correctCode);
         }
 
@@ -251,7 +255,8 @@ public class QuestionBank {
     public synchronized String runJavaCode(String code) throws Exception {
         try {
             String name = code.split(" ")[2];
-
+            code = code.replace("\\n", "\n").replace("\\t", "\t").replace("\\", "\"");
+            System.out.println("Code is: " + "\n" + code + "\n");
             // Create a temporary file to write the usersAnswer
             File usersFile = new File(name + ".java");
             BufferedWriter writer = new BufferedWriter(new FileWriter(usersFile));
@@ -265,6 +270,7 @@ public class QuestionBank {
             int compilationResult = compiler.run(null, null, null, usersFile.getPath());
             if (compilationResult != 0) {
                 System.err.println("Compilation Failed");
+                return null;
             }
 
             // Load the compiled class using a URLClassLoader

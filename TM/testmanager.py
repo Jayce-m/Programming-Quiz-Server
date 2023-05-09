@@ -8,7 +8,7 @@ import http.cookies
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 
-QB_SERVER_HOSTNAME = '10.135.143.188'
+QB_SERVER_HOSTNAME = '127.0.0.1'
 QB_SERVER_PORT = 8050
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -16,7 +16,7 @@ landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
 testpage = open(os.path.join(basedir, 'test.html'), 'r').read()
 
 
-def sendRequestToQbServer(request,httpd):
+def sendRequestToQbServer(request, httpd):
     # For a request for questions the request should be in the format:
     # "<UserID> requestQuestions"
 
@@ -34,7 +34,7 @@ def sendRequestToQbServer(request,httpd):
         if (request.split()[1] == 'requestQuestions'):
             # Send the request to the QB server on the socket
             s.sendall(request.encode())
-        
+
             data = s.recv(4096)
             # Create file to store the questions, the file name is the user ID
             fileName = 'storage/users/usersQuestions/' + \
@@ -50,23 +50,23 @@ def sendRequestToQbServer(request,httpd):
             print("Received response from QB server." + data)
             print(data)
             # Response from QB is delimited by commas
-            data = data.split(' ',4)
+            data = data.split(' ', 4)
             username = data[0]
             questionId = data[1]
             marksReceived = data[2]
             answer = data[3]
 
             with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
-                    data = json.load(json_file)
-                    #FIXME: What is the purpose of this? Could this not be 
-                    questionNumId = -1
-                    # For every question in the questions file (USERID.json)
-                    for question in data:
-                        questionNumId += 1
-                        # Question id the id of the current question the user is on
-                        if (str(question['id']) == str(questionId)):
-                            questionNum = questionNumId
-                            break
+                data = json.load(json_file)
+                # FIXME: What is the purpose of this? Could this not be
+                questionNumId = -1
+                # For every question in the questions file (USERID.json)
+                for question in data:
+                    questionNumId += 1
+                    # Question id the id of the current question the user is on
+                    if (str(question['id']) == str(questionId)):
+                        questionNum = questionNumId
+                        break
             with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
                 if answer.find("Incorrect") != -1:
                     httpd.send_response_only(403)
@@ -96,57 +96,57 @@ def sendRequestToQbServer(request,httpd):
             s.close()
 
         elif (request.split()[1] == 'requestMCQMarking'):
-            #Send the request, and then receive and decode the data
+            # Send the request, and then receive and decode the data
             s.sendall(request.encode())
             data = s.recv(4096)
             data = data.decode("utf-8")
             print("Received response from QB server." + data)
             # Response from QB is delimited by commas; get all the response variables
-            data = data.split(',',3)
+            data = data.split(',', 3)
             username = data[0]
             questionId = data[1]
             marksReceived = data[2]
             answer = data[3]
-            #FIXME: What is this used for?
+            # FIXME: What is this used for?
             questionNum = 0
-            #Open the users file
+            # Open the users file
             with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
                 data = json.load(json_file)
                 questionNumId = -1
-                #Convert the question ID (questions.json) into the users question number (23098648.json)
+                # Convert the question ID (questions.json) into the users question number (23098648.json)
                 for question in data:
                     questionNumId += 1
                     # Question id the id of the current question the user is on
                     if (str(question['id']) == str(questionId)):
                         questionNum = questionNumId
                         break
-            #Open the user database
+            # Open the user database
             with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
-                #If the answer is incorrect
+                # If the answer is incorrect
                 if answer.find("Incorrect") != -1:
-                    #Send the message generated from the QuestionBank server to the user
+                    # Send the message generated from the QuestionBank server to the user
                     httpd.send_response_only(403)
                     httpd.send_header('Content-type', 'application/json')
                     httpd.end_headers()
                     response = {'message': answer}
                     httpd.wfile.write(json.dumps(response).encode())
                     data = json.load(json_file)
-                    #Increment the number of attempts for the question
+                    # Increment the number of attempts for the question
                     data[username]['attempts'][str(questionNum+1)] += 1
-                    #Save the information
+                    # Save the information
                     with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
                         json.dump(data, outfile, indent=4)
                     return
-                #If the answer is correct
+                # If the answer is correct
                 if answer.find("Correct") != -1:
                     data = json.load(json_file)
-                    #Add to the users marks (calculated from the questionbank)
+                    # Add to the users marks (calculated from the questionbank)
                     data[username]['marks'] += int(marksReceived)
                     data[username]['attempts'][str(questionNum+1)] = 4
-                    #Save the information
+                    # Save the information
                     with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
                         json.dump(data, outfile, indent=4)
-                    #Send the message generated from the QuestionBank server to the user
+                    # Send the message generated from the QuestionBank server to the user
                     httpd.send_response_only(200)
                     httpd.send_header('Content-type', 'application/json')
                     httpd.end_headers()
@@ -170,7 +170,7 @@ def serveTest(httpd, username):
         curMarks = data[username]['marks']
     if os.path.isfile(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) == False:
         request = username + " requestQuestions"
-        sendRequestToQbServer(request,httpd)
+        sendRequestToQbServer(request, httpd)
     with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
         # Load the questions from the file
         data = json.load(json_file)
@@ -428,12 +428,13 @@ class TestManager(BaseHTTPRequestHandler):
                                         request = user + ' requestMCQMarking ' + \
                                             str(current_question['id'])+' '+str(
                                                 curAttempt)+' '+str.replace(answer, '"', '')
-                                        sendRequestToQbServer(request,self)
+                                        sendRequestToQbServer(request, self)
                                     elif (current_question['multiple'] == False):
-                                    #If its a programming question then send to QB server with text input
-                                    # "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
+                                        # If its a programming question then send to QB server with text input
+                                        # "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
                                         request = user + ' requestPQMarking ' + \
-                                            str(current_question['id']) + ' ' + str(curAttempt)+ ' ' + current_question['language'] + ' ' + str.replace(answer, '"', '')
+                                            str(current_question['id']) + ' ' + str(
+                                                curAttempt) + ' ' + current_question['language'] + ' ' + str.replace(answer, '"', '')
                                         sendRequestToQbServer(request, self)
 
 
