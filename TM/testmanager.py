@@ -30,29 +30,41 @@ def sendRequestToQbServer(request,httpd):
         print("Connecting to QB server...")
         s.connect((QB_SERVER_HOSTNAME, QB_SERVER_PORT))
         print("Connected to QB server.")
+        # Take the request string and split it
         if (request.split()[1] == 'requestQuestions'):
+            # Send the request to the QB server on the socket
             s.sendall(request.encode())
+        
             data = s.recv(4096)
+            # Create file to store the questions, the file name is the user ID
             fileName = 'storage/users/usersQuestions/' + \
                 request.split()[0] + '.json'
+            # Write the data received from the QB server to the file
             with open(fileName, 'wb') as f:
                 f.write(data)
+        # If the request string is for marking
         elif (request.split()[1] == 'requestMCQMarking'):
             s.sendall(request.encode())
             data = s.recv(4096)
             data = data.decode("utf-8")
             print("Received response from QB server." + data)
+            # Response from QB is delimited by commas
             data = data.split(',',3)
             username = data[0]
             questionId = data[1]
             marksReceived = data[2]
             answer = data[3]
+            #FIXME: What is this used for?
             questionNum = 0
+
             with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
                 data = json.load(json_file)
+                #FIXME: What is the purpose of this? Could this not be 
                 questionNumId = -1
+                # For every question in the questions file (USERID.json)
                 for question in data:
                     questionNumId += 1
+                    # Question id the id of the current question the user is on
                     if (str(question['id']) == str(questionId)):
                         questionNum = questionNumId
                         break
@@ -135,10 +147,12 @@ def serveTest(httpd, username):
     elif (current_question['multiple'] == False):
         # Add textbox for programming question
         programming_html = """
+        <form action="/submit" method="post">
         <div class="text-input">
             <textarea id="answer" placeholder="Write your answer here" rows="10" cols="50">
             </textarea>
         </div>
+        </form>
         """
 
         # Open html doc
@@ -325,6 +339,7 @@ class TestManager(BaseHTTPRequestHandler):
             print("Submitting question")
             # Get answer from post
             content_length = int(self.headers['Content-Length'])
+            # rfile is response file
             answer = self.rfile.read(content_length).decode('utf-8')
             # Get session ID
             cookie = self.headers.get('Cookie')
@@ -355,7 +370,13 @@ class TestManager(BaseHTTPRequestHandler):
                                             str(current_question['id'])+' '+str(
                                                 curAttempt)+' '+str.replace(answer, '"', '')
                                         sendRequestToQbServer(request,self)
-            # if last question then display all results
+                                    elif (current_question['multiple'] == False):
+                                    #If its a programming question then send to QB server with text input
+                                    # "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
+                                    
+                                        request = user + ' requestMarking ' + \
+                                            str(current_question['id'])+' '+str(curAttempt)+' '+str.replace(answer, '"', '')
+                                        sendRequestToQbServer(request)
 
 
 if __name__ == '__main__':
