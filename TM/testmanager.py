@@ -55,7 +55,46 @@ def sendRequestToQbServer(request,httpd):
             questionId = data[1]
             marksReceived = data[2]
             answer = data[3]
-            
+
+            with open(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) as json_file:
+                    data = json.load(json_file)
+                    #FIXME: What is the purpose of this? Could this not be 
+                    questionNumId = -1
+                    # For every question in the questions file (USERID.json)
+                    for question in data:
+                        questionNumId += 1
+                        # Question id the id of the current question the user is on
+                        if (str(question['id']) == str(questionId)):
+                            questionNum = questionNumId
+                            break
+            with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
+                if answer.find("Incorrect") != -1:
+                    httpd.send_response_only(403)
+                    httpd.send_header('Content-type', 'application/json')
+                    httpd.end_headers()
+                    response = {'message': answer}
+                    httpd.wfile.write(json.dumps(response).encode())
+                    data = json.load(json_file)
+                    data[username]['attempts'][str(questionNum+1)] += 1
+                    if (data[username]['attempts'][str(questionNum+1)] == 4):
+                        print("show answer")
+                    with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
+                        json.dump(data, outfile, indent=4)
+                    return
+                if answer.find("Correct") != -1:
+                    data = json.load(json_file)
+                    data[username]['marks'] += int(marksReceived)
+                    data[username]['attempts'][str(questionNum+1)] = 4
+                    with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
+                        json.dump(data, outfile, indent=4)
+                    httpd.send_response_only(200)
+                    httpd.send_header('Content-type', 'application/json')
+                    httpd.end_headers()
+                    response = {'message': answer}
+                    httpd.wfile.write(json.dumps(response).encode())
+                    return
+            s.close()
+
         elif (request.split()[1] == 'requestMCQMarking'):
             #Send the request, and then receive and decode the data
             s.sendall(request.encode())
