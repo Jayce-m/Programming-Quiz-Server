@@ -8,7 +8,7 @@ import http.cookies
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 
-QB_SERVER_HOSTNAME = '127.0.0.1'
+QB_SERVER_HOSTNAME = '10.135.143.188'
 QB_SERVER_PORT = 8050
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -137,14 +137,13 @@ def serveTest(httpd, username):
         httpd.wfile.write(bytes(filled_doc, 'utf-8'))
 
     elif (current_question['multiple'] == False):
-        # generate HTML ace editor
-        programming_html = """<div class="d-flex justify-content-center align-items-center vh-100">
-        <div class="container">
-            <div id="editor-container">
-                <div id="editor">testing</div>
-                </div>
-            </div>
-        </div>"""
+        # Add textbox for programming question
+        programming_html = """
+        <div class="text-input">
+            <textarea id="answer" placeholder="Write your answer here" rows="10" cols="50">
+            </textarea>
+        </div>
+        """
 
         # Open html doc
         html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()

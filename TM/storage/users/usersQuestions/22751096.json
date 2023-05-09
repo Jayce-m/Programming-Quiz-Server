@@ -1,26 +1,81 @@
 [
   {
+    "id": 27,
+    "language": "Python",
+    "multiple": true,
+    "question": "Which of the following is a valid way to read input from the user in Python?",
+    "options": ["input()", "raw_input()", "readline()", "All of the above"],
+    "answer": "input()"
+  },
+  {
+    "id": 23,
+    "language": "Python",
+    "multiple": true,
+    "question": "What is the output of the following Python code snippet?\n\nmy_dict = {'a': 1, 'b': 2, 'c': 3}\nfor key in my_dict:\n print(my_dict[key])",
+    "options": ["a b c", "1 2 3", "1 b 2 c 3 a", "None of the above"],
+    "answer": "1 2 3"
+  },
+  {
+    "id": 25,
+    "language": "Python",
+    "multiple": false,
+    "question": "Create a Python function called reverse_string that takes a string as input and returns the string in reverse order. Call this function from your main program to get the result.",
+    "answer": "def reverse_string(input_string):\n return input_string[::-1]\n\nif name == 'main':\n my_string = input('Enter a string: ')\n reversed_string = reverse_string(my_string)\n print(reversed_string)"
+  },
+  {
     "id": 31,
     "language": "Java",
     "multiple": true,
     "question": "Which of the following is a valid way to create a new instance of a class in Java?",
-    "options": ["MyClass my_instance = MyClass();", "MyClass my_instance = new MyClass();", "MyClass my_instance = MyClass.new();", "None of the above"],
+    "options": [
+      "MyClass my_instance = MyClass();",
+      "MyClass my_instance = new MyClass();",
+      "MyClass my_instance = MyClass.new();",
+      "None of the above"
+    ],
     "answer": "MyClass my_instance = new MyClass();"
   },
   {
-    "id": 28,
-    "language": "Python",
+    "id": 10,
+    "language": "Java",
     "multiple": true,
-    "question": "What is the output of the following Python code snippet?\n\nmy_list = ['apple', 'banana', 'cherry']\nprint(my_list[1:])",
-    "options": ["['banana', 'cherry']", "['apple', 'banana']", "['cherry', 'banana', 'apple']", "None of the above"],
-    "answer": "['banana', 'cherry']"
+    "question": "Which of the following is a method used to convert a string to uppercase in Java?",
+    "options": ["toUpperCase()", "toLowerCase()", "concat()", "replace()"],
+    "answer": "toUpperCase()"
   },
   {
-    "id": 14,
+    "id": 9,
     "language": "Java",
-    "multiple": false,
-    "question": "Write a Java program to print \"Hello, World!\" to the console. Your program should use a class and include a main method to run the program.",
-    "answer": "public class HelloWorld {\n  public static void main(String[] args) {\n    System.out.println(\"Hello, World!\");\n  }\n}"
+    "multiple": true,
+    "question": "Which of the following is a method used to find the index of a substring in a string in Java?",
+    "options": ["indexOf()", "lastIndexOf()", "substring()", "replace()"],
+    "answer": "indexOf()"
+  },
+  {
+    "id": 32,
+    "language": "Python",
+    "multiple": true,
+    "question": "Which of the following is a valid way to remove an element from a list in Python?",
+    "options": [
+      "my_list.remove(element)",
+      "del my_list[index]",
+      "my_list.pop()",
+      "All of the above"
+    ],
+    "answer": "All of the above"
+  },
+  {
+    "id": 1,
+    "language": "Java",
+    "multiple": true,
+    "question": "Which of the following statements is true about the String class in Java?",
+    "options": [
+      "String objects are mutable.",
+      "String objects are immutable.",
+      "String objects can only contain alphabetic characters.",
+      "String objects can only be created using a constructor."
+    ],
+    "answer": "String objects are immutable."
   },
   {
     "id": 17,
@@ -31,42 +86,10 @@
     "answer": "[1, 2, 3, 4]"
   },
   {
-    "id": 4,
-    "language": "Java",
-    "multiple": true,
-    "question": "Which of the following is a valid way to declare and initialize a string in Java?",
-    "options": ["String str = 'Hello';", "String str = new String('Hello');", "Both A and B", "None of the above"],
-    "answer": "None of the above"
-  },
-  {
-    "id": 12,
-    "language": "Python",
-    "multiple": true,
-    "question": "Which of the following statements is true about Python sets?",
-    "options": ["Sets are ordered", "Sets can contain duplicate elements", "Sets are mutable", "Sets can be used as keys in dictionaries"],
-    "answer": "Sets can be used as keys in dictionaries"
-  },
-  {
-    "id": 11,
-    "language": "Python",
-    "multiple": true,
-    "question": "Which of the following is not a valid method for removing an element from a list in Python?",
-    "options": ["remove()", "delete()", "pop()", "clear()"],
-    "answer": "delete()"
-  },
-  {
-    "id": 15,
+    "id": 14,
     "language": "Java",
     "multiple": false,
-    "Question": "Create a Java program that displays the first 10 even numbers. Your program should include a class and a main method to run the program.",
-    "answer": "public class PrintEven Numbers {\n  public static void main(String[] args) {\n   for (int i = 2; i <=20; i += 2) {\n     System.out.println(i);\n    }\n }\n}"
-  },
-  {
-    "id": 23,
-    "language": "Python",
-    "multiple": true,
-    "question": "What is the output of the following Python code snippet?\n\nmy_dict = {'a': 1, 'b': 2, 'c': 3}\nfor key in my_dict:\n print(my_dict[key])",
-    "options": ["a b c", "1 2 3", "1 b 2 c 3 a", "None of the above"],
-    "answer": "1 2 3"
+    "question": "Write a Java program to print \"Hello, World!\" to the console. Your program should use a class and include a main method to run the program.",
+    "answer": "public class HelloWorld {\n  public static void main(String[] args) {\n    System.out.println(\"Hello, World!\");\n  }\n}"
   }
 ]
