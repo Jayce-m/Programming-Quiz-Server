@@ -140,6 +140,9 @@ public class QuestionBank {
         // returns true or false
 
         String correctAnswer = getQuestionAnswer(questionId);
+
+        System.out.println("Correct answer: " + correctAnswer);
+        System.out.println("User's answer: " + usersAnswer);
         
         String marks = "";
         String message = "";
@@ -277,12 +280,10 @@ public class QuestionBank {
     }
 
     public static void main(String[] args) throws Exception {
-
         // Create an instant of QB to create and send questions to the TM
         // Create an instance of QB to receive
         QuestionBank questionSender = new QuestionBank();
-        QuestionBank questionMarker = new QuestionBank();
-        
+        QuestionBank questionMarker = new QuestionBank();        
         // String filePath = "test.txt";
         // byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
         // String co = new String(fileBytes, StandardCharsets.UTF_8);
@@ -327,7 +328,7 @@ public class QuestionBank {
             // For a request for programming question to be marked the request should be in
             // the format:
             // "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
-            String[] requestArray = request.split(" ", 6);
+            String[] requestArray = request.split(" ", 5);
             String userID = requestArray[0];
             String requestType = requestArray[1];
             String questionID;
