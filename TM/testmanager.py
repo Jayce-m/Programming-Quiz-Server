@@ -8,7 +8,7 @@ import http.cookies
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 
-QB_SERVER_HOSTNAME = '10.135.149.248'
+QB_SERVER_HOSTNAME = '10.135.143.188'
 QB_SERVER_PORT = 8050
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -43,6 +43,19 @@ def sendRequestToQbServer(request,httpd):
             with open(fileName, 'wb') as f:
                 f.write(data)
         # If the request string is for marking
+        elif (request.split()[1] == 'requestPQMarking'):
+            s.sendall(request.encode())
+            data = s.recv(4096)
+            data = data.decode("utf-8")
+            print("Received response from QB server." + data)
+            print(data)
+            # Response from QB is delimited by commas
+            data = data.split(' ',4)
+            username = data[0]
+            questionId = data[1]
+            marksReceived = data[2]
+            answer = data[3]
+            
         elif (request.split()[1] == 'requestMCQMarking'):
             s.sendall(request.encode())
             data = s.recv(4096)
@@ -147,9 +160,9 @@ def serveTest(httpd, username):
     elif (current_question['multiple'] == False):
         # Add textbox for programming question
         programming_html = """
-        <form action="/submit" method="post">
-        <div class="text-input">
-            <textarea id="answer" placeholder="Write your answer here" rows="10" cols="50">
+        <form>
+        <div>
+            <textarea id="text-input" placeholder="Write your answer here" rows="10" cols="50">
             </textarea>
         </div>
         </form>
@@ -373,10 +386,9 @@ class TestManager(BaseHTTPRequestHandler):
                                     elif (current_question['multiple'] == False):
                                     #If its a programming question then send to QB server with text input
                                     # "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
-                                    
-                                        request = user + ' requestMarking ' + \
-                                            str(current_question['id'])+' '+str(curAttempt)+' '+str.replace(answer, '"', '')
-                                        sendRequestToQbServer(request)
+                                        request = user + ' requestPQMarking ' + \
+                                            str(current_question['id']) + ' ' + str(curAttempt)+ ' ' + current_question['language'] + ' ' + str.replace(answer, '"', '')
+                                        sendRequestToQbServer(request, self)
 
 
 if __name__ == '__main__':

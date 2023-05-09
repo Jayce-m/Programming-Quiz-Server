@@ -96,11 +96,11 @@ public class QuestionBank {
         // or exceeded the number of attempts and therefore returns the expected answer
         OutputStream mcqOut = clientSocket.getOutputStream();
         mcqOut.write((userName + "," + QuestionID + "," + marksAwarded + "," + returnMessage).getBytes());
-        if (correct) {
-            mcqOut.write("Correct".getBytes());
-        } else {
-            mcqOut.write("Incorrect".getBytes());
-        }
+        // if (correct) {
+        //     mcqOut.write("Correct".getBytes());
+        // } else {
+        //     mcqOut.write("Incorrect".getBytes());
+        // }
         mcqOut.flush();
         mcqOut.close();
 
@@ -108,6 +108,22 @@ public class QuestionBank {
         clientSocket.close();
 
     }
+
+    public synchronized void sendPQMarkingToTM(Socket clientSocket, String request) throws Exception {
+    // Creates an output stream and sends the current
+    // userName, QuestionID, marksAwarded, and a message to indicate if they were
+    // correct/incorrect
+    // or exceeded the number of attempts and therefore returns the expected answer
+    OutputStream mcqOut = clientSocket.getOutputStream();
+    mcqOut.write((request).getBytes());
+    
+    mcqOut.flush();
+    mcqOut.close();
+
+    // Close the socket
+    clientSocket.close();
+
+}
 
     public synchronized void sendQuestionsToTM(Socket clientSocket, String userName) throws Exception {
         // uses sockets to send questions to task manager
@@ -173,7 +189,7 @@ public class QuestionBank {
 
     }
 
-    public synchronized String[] markProgrammingQuestion(String userId, String questionId, String usersAnswer,  
+    public synchronized String markProgrammingQuestion(String userId, String questionId, String usersAnswer,  
             String attempts, String language)
             throws Exception {
 
@@ -212,7 +228,8 @@ public class QuestionBank {
                     : "Incorrect, try again!";
         }
 
-        String[] response = new String[] { userId, questionId, marks, message };
+        String response = userId + " " + questionId + " " + marks + " " + message;
+
         return response;
     }
 
@@ -313,7 +330,7 @@ public class QuestionBank {
             // Read in client's request
             
             InputStream inputStream = clientSocket.getInputStream();
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[4096];
             int length = inputStream.read(buffer);
             request = new String(buffer, 0, length);
             System.out.println("\033[34mRequest received: " + request + "\033[0m\n");
@@ -356,11 +373,16 @@ public class QuestionBank {
                     }
                     break;
                 case "requestPQMarking":
+                    requestArray = request.split(" ", 6);
+                    System.out.println(Arrays.toString(requestArray));
                     questionID = requestArray[2];
                     attempts = requestArray[3];
                     String language = requestArray[4];
                     String code = requestArray[5];
-                    //questionMarker.markProgrammingQuestion(code, questionID, userID, attempts, language);
+                    //"<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
+
+                    String response = questionMarker.markProgrammingQuestion(userID, questionID, code, attempts, language);
+                    questionMarker.sendPQMarkingToTM(clientSocket, response);
                     break;
                 default:
                     break;
