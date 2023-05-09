@@ -56,17 +56,13 @@ def sendRequestToQbServer(request,httpd):
                     if (str(question['id']) == str(questionId)):
                         questionNum = questionNumId
                         break
-            print("Username" + username)
-            print("Question ID: " + questionId)
-            print("Question Num: " + str(questionNum))
-            print("Marks Received: " + marksReceived)
-            print("Answer: " + answer)
             with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
                 if answer.find("Incorrect") != -1:
-                    httpd.send_response(401)
-                    httpd.send_header('Content-Type', 'application/json')
+                    httpd.send_response_only(403)
+                    httpd.send_header('Content-type', 'application/json')
                     httpd.end_headers()
-                    httpd.wfile.write(bytes("incorrect", 'utf-8'))
+                    response = {'message': answer}
+                    httpd.wfile.write(json.dumps(response).encode())
                     data = json.load(json_file)
                     data[username]['attempts'][str(questionNum+1)] += 1
                     if (data[username]['attempts'][str(questionNum+1)] == 4):
@@ -78,13 +74,13 @@ def sendRequestToQbServer(request,httpd):
                     data = json.load(json_file)
                     data[username]['marks'] += int(marksReceived)
                     data[username]['attempts'][str(questionNum+1)] = 4
-                    print("show answer correct")
                     with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
                         json.dump(data, outfile, indent=4)
-                    httpd.send_response(200)
-                    httpd.send_header('Content-Type', 'application/json')
+                    httpd.send_response_only(200)
+                    httpd.send_header('Content-type', 'application/json')
                     httpd.end_headers()
-                    httpd.wfile.write(bytes("correct", 'utf-8'))
+                    response = {'message': answer}
+                    httpd.wfile.write(json.dumps(response).encode())
                     return
         s.close()
 
@@ -359,11 +355,6 @@ class TestManager(BaseHTTPRequestHandler):
                                             str(current_question['id'])+' '+str(
                                                 curAttempt)+' '+str.replace(answer, '"', '')
                                         sendRequestToQbServer(request,self)
-                                        self.send_response(200)
-                                        self.send_header(
-                                            'Content-type', 'text/html')
-                                        self.end_headers()
-                                        serveTest(self, user)
             # if last question then display all results
 
 

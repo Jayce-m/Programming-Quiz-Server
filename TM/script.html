@@ -56,13 +56,12 @@
       },
       body: JSON.stringify(data)
     })
+
       .then(response => {
         console.log('POST request sent successfully');
-        console.log(response.body);
         if (response.status == 200) {
           document.getElementById("submitBtn").disabled = true;
           document.getElementById("attemptStr").innerHTML = "This is question " + questionNum + ", you have no attempts left";
-          alert("Correct!");
         } else {
           attempts = parseInt(attempts) + 1;
           if (parseInt(attempts) > 3) {
@@ -71,8 +70,11 @@
           } else {
             document.getElementById("attemptStr").innerHTML = "You are on question " + questionNum + " (attempt " + attempts + "/3) out of 10";
           }
-          alert("Incorrect, try again")
         }
+        return response.json();
+      })
+      .then(data => {
+        alert(data.message); // display the message in the alert
       })
       .catch(error => {
         console.error('Error sending POST request:', error);
