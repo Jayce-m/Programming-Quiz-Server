@@ -69,8 +69,10 @@ public class QuestionBank {
                     inArrayAlready = true;
                 }
             }
-            if (!(inArrayAlready)) {
+            if (!inArrayAlready) {
                 usersQuestions.add(allQuestions.get(randomNumber));
+            } else {
+                i--;
             }
         }
 
@@ -136,9 +138,6 @@ public class QuestionBank {
 
         String marks = "";
         String message = "";
-        
-        System.out.println("Correct answer: " + correctAnswer);
-        System.out.println("User's answer: " + usersAnswer);
 
         if (correctAnswer.equals(usersAnswer)) {
             message = "Correct!";
