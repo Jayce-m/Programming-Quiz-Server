@@ -8,13 +8,253 @@ import http.cookies
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 
-QB_SERVER_HOSTNAME = '127.0.0.1'
+# SET THESE TO THE CORRECT VALUES FOR YOUR SYSTEM AND FOR THE SYSTEM THE QUESTION BANK IS RUNNING ON
+# TO DETERMINE QB SERVER IP ADDRESS AND PORT RUN THE QB SERVER AND THE IP AND PORT WILL BE PRINTED TO THE TERMINAL
+QB_SERVER_IP_ADDRESS = '192.168.68.60'
 QB_SERVER_PORT = 8050
+TM_SERVER_IP_ADDRESS = '192.168.68.60'
+TM_SERVER_PORT = 8080
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
-testpage = open(os.path.join(basedir, 'test.html'), 'r').read()
 
+# This is the JavaScript that will be injected into the test page for the submit, next and back buttons
+script = """
+    <script>
+    var questionNum = '%s';
+    var attempts = '%s';
+    if (attempts > 3) {
+        document.getElementById("attemptStr").innerHTML = "This is question " + questionNum + ", you have no attempts left";
+        document.getElementById("submitBtn").disabled = true;
+    } else {
+        document.getElementById("attemptStr").innerHTML = "You are on question " + questionNum + " (attempt " + attempts + "/3) out of 10";
+    }
+
+    if (questionNum >= 10) {
+        document.getElementById("nextBtn").disabled = true;
+    } else if (questionNum <= 1) {
+        document.getElementById("backBtn").disabled = true;
+    }
+
+    function nextQuestion() {
+
+        fetch('/next', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+        })
+        .then(response => {
+            console.log('POST request sent successfully');
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error sending POST request:', error);
+        });
+    }
+
+    function prevQuestion() {
+        fetch('/back', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+        })
+        .then(response => {
+            console.log('POST request sent successfully');
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error sending POST request:', error);
+        });
+    }
+
+    function submitAnswer() {
+        
+        // If the text area is on the DOM then replace data with the text area value
+        //console.log(document.getElementById("text-input"));
+        let data;
+        if (document.getElementById("text-input") != null) {
+            data = document.getElementById("text-input").value;
+        } else {
+            data = document.querySelector('input[name="answer"]:checked').value;
+        }
+        fetch('/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+        })
+
+        .then(response => {
+            console.log('POST request sent successfully');
+            if (response.status == 200) {
+            document.getElementById("submitBtn").disabled = true;
+            document.getElementById("attemptStr").innerHTML = "This is question " + questionNum + ", you have no attempts left";
+            } else {
+            attempts = parseInt(attempts) + 1;
+            if (parseInt(attempts) > 3) {
+                document.getElementById("submitBtn").disabled = true;
+                document.getElementById("attemptStr").innerHTML = "This is question " + questionNum + ", you have no attempts left";
+            } else {
+                document.getElementById("attemptStr").innerHTML = "You are on question " + questionNum + " (attempt " + attempts + "/3) out of 10";
+            }
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message); // display the message in the alert
+        })
+        .catch(error => {
+            console.error('Error sending POST request:', error);
+        });
+    }
+    </script>"""
+
+# This is the HTML that displays the test page
+testpage = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="UTF-8">
+    <title>Test Manager</title>
+    <style>
+        .logoutLblPos {
+        position: fixed;
+        right: 10px;
+        top: 5px;
+        }
+
+        #editor {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        }
+
+        #editor-container {
+        height: 100%%;
+        min-height: 400px;
+        position: relative;
+        }
+    </style>
+    </head>
+
+    <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+        <a class="navbar-brand disabled">Test Manager</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+            <li class="nav-item">
+                <!-- fullname - username -->
+                <a class="nav-link">Welcome, %s (ID: %s)! </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="attemptStr"></a>
+            </li>
+            <li class="nav-item">
+                <!-- curMarks-->
+                <a class="nav-link">Marks so far: %s/30</a>
+            </li>
+            </ul>
+        </div>
+        <form class="d-flex" name="form1" method="post" action="logout">
+            <label class="logoutLblPos">
+            <input class="btn btn-outline-success" name="submit2" type="submit" id="submit2" value="Log Out">
+            </label>
+        </form>
+        </div>
+    </nav>
+    <div class="container mt-3">
+        <form>
+        <!-- questionNum -->
+        <h4>Question %s:</h4>
+        <!-- current_question -->
+        <div>
+            %s
+        </div>
+        <!-- options_html -->
+        <div>
+            %s
+        </div>
+        </form>
+        <button onclick="submitAnswer()" id="submitBtn" class="btn btn-primary mt-3">Submit Answer</button>
+        <button onclick="prevQuestion()" id="backBtn" class="btn btn-primary mt-3">Back</button>
+        <button onclick="nextQuestion()" id="nextBtn" class="btn btn-primary mt-3">Next</button>
+    </div>
+    </body>
+    </html>"""
+
+# This is the HTML that displays the login page
+landing = """
+    <html>
+        <head>
+            <title> TM Login </title>
+        </head>
+    <body>
+        <style>
+            .loginbox {
+                background-color:rgba(50, 135, 83, 0.3);
+                width: 1000px;
+                border: 3px solid rgb(15,82,40);
+                padding: 10px;
+                margin: 10px;
+            }
+            h1 {
+            text-align: center;
+            }
+            h3 {
+            text-align: center;
+            }
+            form {
+            text-align: center;
+            }
+        </style>
+        <div class="loginbox">
+            <h1>Login to TM</h1>
+            <h3>Enter your credentials</h3>
+            <form class="login-form">
+                <input
+                    type="text" placeholder="Username"/>
+                    <br/><br/>
+                <input
+                    type="password" placeholder="Password"
+                    />
+                    <br/><br/>
+                    <button type="submit">LOGIN</button>
+                </form>
+            </div>
+            <script>
+            document.querySelector('.login-form').addEventListener('submit', function(event) {
+                    // prevent the default form submission
+                    event.preventDefault();
+
+                    // get the username and password from the form
+                    var username = document.querySelector('input[type="text"]').value;
+                    var password = document.querySelector('input[type="password"]').value;
+
+                    // make an HTTP POST request to the server with the user's credentials
+                    var login = new XMLHttpRequest();
+                    login.open('POST', '/login', true);
+                    login.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    login.onreadystatechange = function() {
+                        if (login.readyState === XMLHttpRequest.DONE && login.status === 200) {
+                            // login successful, redirect to test.html
+                            window.location.href = 'test.html';
+                        } else if (login.readyState === XMLHttpRequest.DONE && login.status === 401) {
+                            // login failed, show an error message
+                            alert('Invalid username or password');
+                        }
+                    };
+                    login.send('username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password));
+                });
+            </script>
+            </body>
+
+
+    </html>"""
 
 def sendRequestToQbServer(request, httpd):
     # For a request for questions the request should be in the format:
@@ -27,9 +267,9 @@ def sendRequestToQbServer(request, httpd):
     # "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        print("Connecting to QB server...")
-        s.connect((QB_SERVER_HOSTNAME, QB_SERVER_PORT))
-        print("Connected to QB server.")
+        print("\033[1;32mConnecting to QB server...\n\033[0m")
+        s.connect((QB_SERVER_IP_ADDRESS, QB_SERVER_PORT))
+        print("\033[1;32mConnected established with QB server...\n\033[0m")
         # Take the request string and split it
         if (request.split()[1] == 'requestQuestions'):
             # Send the request to the QB server on the socket
@@ -153,11 +393,9 @@ def sendRequestToQbServer(request, httpd):
                     response = {'message': answer}
                     httpd.wfile.write(json.dumps(response).encode())
                     return
+        elif (request == 'close the QB server'):
+            s.sendall(request.encode())
         s.close()
-
-
-def genSessionID():
-    return ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(32))
 
 
 def serveTest(httpd, username):
@@ -176,7 +414,9 @@ def serveTest(httpd, username):
         data = json.load(json_file)
 
         # Get the current question
-        current_question = data[questionNum-1]
+    current_question = data[questionNum-1]
+    question = current_question['question'].replace(
+        '\n', '<br>').replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')
 
     # if the question is multiple choice then display options.
     if (current_question['multiple'] == True):
@@ -193,36 +433,46 @@ def serveTest(httpd, username):
                 option, option)
             options_html += '</div>'
 
+        # This ensures that the question is displayed properly
+
         # Fill in placeholders in HTML document
-        html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()
-        filled_doc = html_doc % (fullName, username, curMarks,
-                                 questionNum, current_question['question'], options_html)
-        script_doc = open(os.path.join(basedir, 'script.html'), 'r').read()
-        filled_doc = filled_doc + (script_doc % (questionNum, curAttempt))
+
+        filled_doc = testpage % (fullName, username, curMarks,
+                                 questionNum, question, options_html)
+
+        filled_doc = filled_doc + (script % (questionNum, curAttempt))
 
         # Send response to client
         httpd.wfile.write(bytes(filled_doc, 'utf-8'))
 
     elif (current_question['multiple'] == False):
-        # Add textbox for programming question
-        programming_html = """
-        <form>
-        <div>
-            <textarea id="text-input" placeholder="Write your answer here" rows="10" cols="50">
-            </textarea>
-        </div>
-        </form>
-        """
 
-        # Open html doc
-        html_doc = open(os.path.join(basedir, 'test.html'), 'r').read()
+        # Add textbox for programming question which allows tabs
+        programming_html = """
+            <form>
+            <div>
+            <textarea id="text-input" placeholder="Write your answer here" rows="10" cols="50"></textarea>
+            </div>
+            </form>
+
+            <script>
+            const textarea = document.getElementById("text-input");
+            textarea.addEventListener("keydown", function(e) {
+            if (e.key === "Tab") {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 1;
+            }
+            });
+            </script>"""
 
         # Fill in placeholders in HTML document
         # FIXME: needs extra format specifiers in test.html
-        filled_doc = html_doc % (fullName, username, curMarks,
-                                 questionNum, current_question['question'], programming_html)
-        script_doc = open(os.path.join(basedir, 'script.html'), 'r').read()
-        filled_doc = filled_doc + (script_doc % (questionNum, curAttempt))
+        filled_doc = testpage % (fullName, username, curMarks,
+                                 questionNum, question, programming_html)
+        filled_doc = filled_doc + (script % (questionNum, curAttempt))
 
         # Send response to client
         httpd.wfile.write(bytes(filled_doc, 'utf-8'))
@@ -252,7 +502,6 @@ class TestManager(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'text/html')
         self.end_headers()
 
-        landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
         self.wfile.write(bytes(landing, 'utf-8'))
 
     def do_POST(self):
@@ -283,7 +532,6 @@ class TestManager(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
 
-            landing = open(os.path.join(basedir, 'landing.html'), 'r').read()
             self.wfile.write(bytes(landing, 'utf-8'))
             return
         if self.path == '/login':
@@ -298,7 +546,8 @@ class TestManager(BaseHTTPRequestHandler):
                 if (username in data):
                     if (password == data[username]['password']):
                         # Generate Session ID
-                        sessionid = genSessionID()
+                        sessionid = ''.join(random.choice(
+                            string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(32))
                         cookie = http.cookies.SimpleCookie()
                         cookie['session-id'] = sessionid
                         expires = datetime.datetime.utcnow() + datetime.timedelta(days=1)
@@ -440,12 +689,21 @@ class TestManager(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     try:
-        print("Setting up TM server")
-        server_address = ('localhost', 8080)
+        print("\033[1;32m\nYour IP address: " +
+              str(TM_SERVER_IP_ADDRESS) + "\n\033[0m")
+        print("\033[1;32mTM Your port: " + str(TM_SERVER_PORT) + "\n\033[0m")
+        print("\033[1;32mTM Server Starting...\n\033[0m")
+        server_address = (TM_SERVER_IP_ADDRESS, TM_SERVER_PORT)
         httpd = HTTPServer(server_address, TestManager)
+        print("\033[1;32mTM Server is running\n\033[0m")
         httpd.serve_forever()
-        print("TM Server is running")
 
     except KeyboardInterrupt:
-        print('Server is terminated')
+        print("\n\033[1;31mTM server is terminating...\033[0m\n")
+        print("\033[1;31mRequesting QB server to terminate...\033[0m\n")
+        request = 'close the QB server'
+        sendRequestToQbServer(request, None)
+        print("\033[1;31mTM server has been terminated\033[0m\n")
+        print("\033[1;31mQB server has been terminated\033[0m\n")
+        # send closing request to QB server
         httpd.socket.close()
