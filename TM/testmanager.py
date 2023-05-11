@@ -1,3 +1,9 @@
+# Student ID: 22751096 | Student Name: Jalil Inayat-Hussain | Contribution: 25%
+# Student ID: 15204630 | Student Name: Cormac Larkin | Contribution: 25%
+# Student ID: 15113005 | Student Name: Killian McCarthy | Contribution: 25%
+# Student ID: 15202398 | Student Name: Diarmuid Murphy | Contribution: 25%
+
+
 import socket
 import datetime
 import string
@@ -10,9 +16,9 @@ import os
 
 # SET THESE TO THE CORRECT VALUES FOR YOUR SYSTEM AND FOR THE SYSTEM THE QUESTION BANK IS RUNNING ON
 # TO DETERMINE QB SERVER IP ADDRESS AND PORT RUN THE QB SERVER AND THE IP AND PORT WILL BE PRINTED TO THE TERMINAL
-QB_SERVER_IP_ADDRESS = '192.168.68.60'
+QB_SERVER_IP_ADDRESS = '192.168.0.9'
 QB_SERVER_PORT = 8050
-TM_SERVER_IP_ADDRESS = '192.168.68.60'
+TM_SERVER_IP_ADDRESS = '192.168.0.9'
 TM_SERVER_PORT = 8080
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -23,10 +29,13 @@ script = """
     var questionNum = '%s';
     var attempts = '%s';
     if (attempts > 3) {
-        document.getElementById("attemptStr").innerHTML = "This is question " + questionNum + ", you have no attempts left";
+        document.getElementById("attemptStr").innerHTML = "This is question " + \
+                                questionNum + ", you have no attempts left";
         document.getElementById("submitBtn").disabled = true;
     } else {
-        document.getElementById("attemptStr").innerHTML = "You are on question " + questionNum + " (attempt " + attempts + "/3) out of 10";
+        document.getElementById("attemptStr").innerHTML = "You are on question " + \
+                                questionNum + \
+                                    " (attempt " + attempts + "/3) out of 10";
     }
 
     if (questionNum >= 10) {
@@ -69,14 +78,15 @@ script = """
     }
 
     function submitAnswer() {
-        
+
         // If the text area is on the DOM then replace data with the text area value
         //console.log(document.getElementById("text-input"));
         let data;
         if (document.getElementById("text-input") != null) {
             data = document.getElementById("text-input").value;
         } else {
-            data = document.querySelector('input[name="answer"]:checked').value;
+            data = document.querySelector(
+                'input[name="answer"]:checked').value;
         }
         fetch('/submit', {
         method: 'POST',
@@ -90,20 +100,41 @@ script = """
             console.log('POST request sent successfully');
             if (response.status == 200) {
             document.getElementById("submitBtn").disabled = true;
-            document.getElementById("attemptStr").innerHTML = "This is question " + questionNum + ", you have no attempts left";
+            document.getElementById(
+                "attemptStr").innerHTML = "This is question " + questionNum + ", you have no attempts left";
             } else {
             attempts = parseInt(attempts) + 1;
             if (parseInt(attempts) > 3) {
                 document.getElementById("submitBtn").disabled = true;
-                document.getElementById("attemptStr").innerHTML = "This is question " + questionNum + ", you have no attempts left";
+                document.getElementById(
+                    "attemptStr").innerHTML = "This is question " + questionNum + ", you have no attempts left";
             } else {
-                document.getElementById("attemptStr").innerHTML = "You are on question " + questionNum + " (attempt " + attempts + "/3) out of 10";
+                document.getElementById("attemptStr").innerHTML = "You are on question " + \
+                                        questionNum + \
+                                            " (attempt " + attempts + \
+                                               "/3) out of 10";
             }
             }
             return response.json();
         })
         .then(data => {
             alert(data.message); // display the message in the alert
+        })
+        .catch(error => {
+            console.error('Error sending POST request:', error);
+        });
+    }
+
+    function resetQuiz() {
+        fetch('/reset', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+        })
+        .then(response => {
+            console.log('POST request sent successfully');
+            location.reload();
         })
         .catch(error => {
             console.error('Error sending POST request:', error);
@@ -156,7 +187,10 @@ testpage = """
             </li>
             <li class="nav-item">
                 <!-- curMarks-->
-                <a class="nav-link">Marks so far: %s/30</a>
+                <a class="nav-link">Total marks so far: %s/30</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link">Marks for this question: %s/3</a>
             </li>
             </ul>
         </div>
@@ -183,6 +217,7 @@ testpage = """
         <button onclick="submitAnswer()" id="submitBtn" class="btn btn-primary mt-3">Submit Answer</button>
         <button onclick="prevQuestion()" id="backBtn" class="btn btn-primary mt-3">Back</button>
         <button onclick="nextQuestion()" id="nextBtn" class="btn btn-primary mt-3">Next</button>
+        <button onclick="resetQuiz()" id="resetBtn" class="btn btn-primary mt-3">Restart Quiz</button>
     </div>
     </body>
     </html>"""
@@ -238,7 +273,8 @@ landing = """
                     // make an HTTP POST request to the server with the user's credentials
                     var login = new XMLHttpRequest();
                     login.open('POST', '/login', true);
-                    login.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    login.setRequestHeader(
+                        'Content-Type', 'application/x-www-form-urlencoded');
                     login.onreadystatechange = function() {
                         if (login.readyState === XMLHttpRequest.DONE && login.status === 200) {
                             // login successful, redirect to test.html
@@ -248,13 +284,15 @@ landing = """
                             alert('Invalid username or password');
                         }
                     };
-                    login.send('username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password));
+                    login.send('username=' + encodeURIComponent(username) + \
+                               '&password=' + encodeURIComponent(password));
                 });
             </script>
             </body>
 
 
     </html>"""
+
 
 def sendRequestToQbServer(request, httpd):
     # For a request for questions the request should be in the format:
@@ -323,6 +361,8 @@ def sendRequestToQbServer(request, httpd):
                     return
                 if answer.find("Correct") != -1:
                     data = json.load(json_file)
+                    data[username]['marksForIndividualQuestion'][str(questionNum+1)] = int(
+                        marksReceived)
                     data[username]['marks'] += int(marksReceived)
                     data[username]['attempts'][str(questionNum+1)] = 4
                     with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
@@ -382,6 +422,8 @@ def sendRequestToQbServer(request, httpd):
                     data = json.load(json_file)
                     # Add to the users marks (calculated from the questionbank)
                     data[username]['marks'] += int(marksReceived)
+                    data[username]['marksForIndividualQuestion'][str(questionNum +
+                                                                 1)] = int(marksReceived)
                     data[username]['attempts'][str(questionNum+1)] = 4
                     # Save the information
                     with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
@@ -406,6 +448,8 @@ def serveTest(httpd, username):
         curAttempt = data[username]['attempts'][str(
             questionNum)]
         curMarks = data[username]['marks']
+        marksForIndividualQuestion = data[username]['marksForIndividualQuestion'][str(
+            questionNum + 1)]
     if os.path.isfile(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) == False:
         request = username + " requestQuestions"
         sendRequestToQbServer(request, httpd)
@@ -437,7 +481,7 @@ def serveTest(httpd, username):
 
         # Fill in placeholders in HTML document
 
-        filled_doc = testpage % (fullName, username, curMarks,
+        filled_doc = testpage % (fullName, username, curMarks, marksForIndividualQuestion,
                                  questionNum, question, options_html)
 
         filled_doc = filled_doc + (script % (questionNum, curAttempt))
@@ -462,7 +506,8 @@ def serveTest(httpd, username):
                 e.preventDefault();
                 const start = this.selectionStart;
                 const end = this.selectionEnd;
-                this.value = this.value.substring(0, start) + "\t" + this.value.substring(end);
+                this.value = this.value.substring(
+                    0, start) + "\t" + this.value.substring(end);
                 this.selectionStart = this.selectionEnd = start + 1;
             }
             });
@@ -470,7 +515,7 @@ def serveTest(httpd, username):
 
         # Fill in placeholders in HTML document
         # FIXME: needs extra format specifiers in test.html
-        filled_doc = testpage % (fullName, username, curMarks,
+        filled_doc = testpage % (fullName, username, curMarks, marksForIndividualQuestion,
                                  questionNum, question, programming_html)
         filled_doc = filled_doc + (script % (questionNum, curAttempt))
 
@@ -685,6 +730,43 @@ class TestManager(BaseHTTPRequestHandler):
                                             str(current_question['id']) + ' ' + str(
                                                 curAttempt) + ' ' + current_question['language'] + ' ' + str.replace(answer, '"', '')
                                         sendRequestToQbServer(request, self)
+        if self.path == '/reset':
+            cookie = self.headers.get('Cookie')
+            if cookie is None:
+                self.send_response(401)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(bytes("Session expired!", 'utf-8'))
+                return
+            for c in cookie.split(';'):
+                name, value = c.strip().split('=')
+                if name == 'session-id':
+                    session_id = value
+                    with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
+                        data = json.load(json_file)
+                        for user in data:
+                            if (data[user]['session-id'] == session_id):
+                                print("Resetting question")
+                                # Get the current question
+                                data[user]['question'] = 1
+                                print(data[user]['question'])
+                                data[user]['marks'] = 0
+                                for attempt in data[user]['attempts']:
+                                    data[user]['attempts'][attempt] = 1
+                                for mark in data[user]['marksForIndividualQuestion']:
+                                    data[user]['marksForIndividualQuestion'][mark] = 0
+                                questionNum = data[user]['question']
+
+                                with open('storage/users/users.json', 'w') as outfile:
+                                    json.dump(data, outfile, indent=4)
+                                # Get the current attempt
+                                with open(os.path.join(basedir, 'storage/users/usersQuestions/' + user + '.json')) as json_file:
+                                    # Serve HTML page
+                                    self.send_response(200)
+                                    self.send_header(
+                                        'Content-type', 'text/html')
+                                    self.end_headers()
+                                    serveTest(self, user)
 
 
 if __name__ == '__main__':

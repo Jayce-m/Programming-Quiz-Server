@@ -1,3 +1,8 @@
+// Student ID: 22751096 | Student Name: Jalil Inayat-Hussain | Contribution: 25%
+// Student ID: 15204630 | Student Name: Cormac Larkin | Contribution: 25%
+// Student ID: 15113005 | Student Name: Killian McCarthy | Contribution: 25%
+// Student ID: 15202398 | Student Name: Diarmuid Murphy | Contribution: 25%
+
 import java.io.*;
 import java.net.*;
 import java.util.Arrays;
@@ -243,7 +248,6 @@ public class QuestionBank {
         // Ensure you have python3 installed and can run python using the python3 command
         // as seen below
         try {
-            String name = code.split(" ")[2];
             code = code.replace("\\n", "\n").replace("\\t", "\t").replace("\\", "\"");
 
             ProcessBuilder pb = new ProcessBuilder("python3", "-c", code);
