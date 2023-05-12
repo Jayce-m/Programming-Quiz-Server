@@ -48,15 +48,16 @@
   }
 
   function submitAnswer() {
-    
+
     // If the text area is on the DOM then replace data with the text area value
     //console.log(document.getElementById("text-input"));
+    let data = '';
     if (document.getElementById("text-input") != null) {
       data = document.getElementById("text-input").value;
     } else {
-      let data = document.querySelector('input[name="answer"]:checked').value;
+      data = document.querySelector('input[name="answer"]:checked').value;
     }
-    
+
     fetch('/submit', {
       method: 'POST',
       headers: {
