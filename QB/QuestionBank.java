@@ -240,7 +240,7 @@ public class QuestionBank {
         }
 
         String response = userId + " " + questionId + " " + marks + " " + message;
-
+        System.out.println(response);
         return response;
     }
 
