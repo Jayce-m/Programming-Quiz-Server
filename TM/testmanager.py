@@ -349,7 +349,6 @@ def sendRequestToQbServer(request, httpd):
                         break
             with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
                 if answer.find("Incorrect") != -1:
-                    httpd.wfile.write(json.dumps(response).encode())
                     data = json.load(json_file)
                     data[username]['attempts'][str(questionNum+1)] += 1
                     httpd.send_response_only(403)
