@@ -405,9 +405,6 @@ public class QuestionBank {
         
         String ipAddress = "";
 
-        // Set the timeout for the server to 10 seconds
-        int timeout = 10000;
-
         // Program will use port 8000 by default unless specified otherwise
         int port = 8000;
 
@@ -432,56 +429,48 @@ public class QuestionBank {
         // If the port is already in use, print error and exit
         try (ServerSocket serverSocket = new ServerSocket(port, 50, address)){
             
-            // Set the timeout for the server
-            serverSocket.setSoTimeout(timeout);
             System.out.println("\033[1;32mServer Started...\033[0m\n");
 
             while (true) {
     
-                try {
-                    // Accept a client connection
-                    Socket clientSocket = serverSocket.accept();
-                    System.out.println("\033[1;34mClient connected: " + clientSocket.getInetAddress() + "\033[0m\n");
-        
-                    // String to store the request from the TM
-                    String request = "";
-        
-                    // Read in client's request
-                    InputStream inputStream = clientSocket.getInputStream();
-                    byte[] buffer = new byte[4096];
-                    int length = inputStream.read(buffer);
-                    request = new String(buffer, 0, length);
-                    System.out.println("\033[1;34mRequest received: " + request + "\033[0m\n");
-                    
-                    // If the TM is terminated the QB terminates as well
-                    if (request.equals("close the QB server")) {
-                        System.out.println("\033[1;31mServer Closed\033[0m\n");
-                        serverSocket.close();
-                        break;
-                    }
-        
-                    // Create a copy of the request variable
-                    String requestCopy = new String(request);
-        
-                    // Create a thread to handle the request
-                    Thread thread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                requestHandler(requestCopy, clientSocket);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    
-                    thread.start();
-                    
-                } catch (SocketTimeoutException e) {
-                    System.out.println("\033[1;31mServer timed out\033[0m\n");
+                
+                // Accept a client connection
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("\033[1;34mClient connected: " + clientSocket.getInetAddress() + "\033[0m\n");
+    
+                // String to store the request from the TM
+                String request = "";
+    
+                // Read in client's request
+                InputStream inputStream = clientSocket.getInputStream();
+                byte[] buffer = new byte[4096];
+                int length = inputStream.read(buffer);
+                request = new String(buffer, 0, length);
+                System.out.println("\033[1;34mRequest received: " + request + "\033[0m\n");
+                
+                // If the TM is terminated the QB terminates as well
+                if (request.equals("close the QB server")) {
+                    System.out.println("\033[1;31mServer Closed\033[0m\n");
                     serverSocket.close();
-                    System.exit(1);
+                    break;
                 }
+    
+                // Create a copy of the request variable
+                String requestCopy = new String(request);
+    
+                // Create a thread to handle the request
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            requestHandler(requestCopy, clientSocket);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                
+                thread.start();
             }
         } catch (Exception e) {
             e.printStackTrace();

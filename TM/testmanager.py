@@ -800,18 +800,7 @@ if __name__ == '__main__':
         print("\033[1;32mTM Server Starting...\n\033[0m")
         server_address = (tmServerIpAddress, tmServerPort)
         httpd = HTTPServer(server_address, TestManager)
-        # Set the timeout value in seconds
-        server_thread = threading.Thread(target=httpd.serve_forever)
-        server_thread.start()
-
-        timeout = 10
-        # Wait for the specified timeout period
-        server_thread.join(timeout)
-
-        # If the thread is still alive, stop the server and print a timeout message
-        if server_thread.is_alive():
-            httpd.shutdown()
-            print("\033[1;31mTM Server timed out\n\033[0m")
+        httpd.serve_forever()
 
     except KeyboardInterrupt:
         print("\n\033[1;31mTM server is terminating...\033[0m\n")
