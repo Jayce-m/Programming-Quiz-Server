@@ -11,12 +11,8 @@ import java.util.Arrays;
 import java.util.Random;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
-import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 // TODO
 // 1. Change the program to send the questions without the answer
