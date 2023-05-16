@@ -16,9 +16,9 @@ import os
 
 # SET THESE TO THE CORRECT VALUES FOR YOUR SYSTEM AND FOR THE SYSTEM THE QUESTION BANK IS RUNNING ON
 # TO DETERMINE QB SERVER IP ADDRESS AND PORT RUN THE QB SERVER AND THE IP AND PORT WILL BE PRINTED TO THE TERMINAL
-QB_SERVER_IP_ADDRESS = '192.168.0.9'
+QB_SERVER_IP_ADDRESS = '127.0.0.1'
 QB_SERVER_PORT = 8050
-TM_SERVER_IP_ADDRESS = '192.168.0.9'
+TM_SERVER_IP_ADDRESS = '127.0.0.1'
 TM_SERVER_PORT = 8080
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -187,10 +187,10 @@ testpage = """
             </li>
             <li class="nav-item">
                 <!-- curMarks-->
-                <a class="nav-link">Total marks so far: %s/30</a>
+                <a class="nav-link" id="totalStr">Total marks so far: %s/30</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link">Marks for this question: %s/3</a>
+                <a class="nav-link" id="markStr>Marks for this question: %s/3</a>
             </li>
             </ul>
         </div>
@@ -449,7 +449,8 @@ def serveTest(httpd, username):
             questionNum)]
         curMarks = data[username]['marks']
         marksForIndividualQuestion = data[username]['marksForIndividualQuestion'][str(
-            questionNum + 1)]
+            questionNum)]
+        print("marks: " + str(marksForIndividualQuestion))
     if os.path.isfile(os.path.join(basedir, 'storage/users/usersQuestions/' + username + '.json')) == False:
         request = username + " requestQuestions"
         sendRequestToQbServer(request, httpd)
@@ -480,6 +481,7 @@ def serveTest(httpd, username):
         # This ensures that the question is displayed properly
 
         # Fill in placeholders in HTML document
+        print(str(questionNum))
 
         filled_doc = testpage % (fullName, username, curMarks, marksForIndividualQuestion,
                                  questionNum, question, options_html)
