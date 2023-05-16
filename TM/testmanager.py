@@ -13,13 +13,11 @@ from urllib.parse import parse_qs
 import http.cookies
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
+import argparse
+import threading
 
 # SET THESE TO THE CORRECT VALUES FOR YOUR SYSTEM AND FOR THE SYSTEM THE QUESTION BANK IS RUNNING ON
 # TO DETERMINE QB SERVER IP ADDRESS AND PORT RUN THE QB SERVER AND THE IP AND PORT WILL BE PRINTED TO THE TERMINAL
-QB_SERVER_IP_ADDRESS = '127.0.0.1'
-QB_SERVER_PORT = 8050
-TM_SERVER_IP_ADDRESS = ''
-TM_SERVER_PORT = 8080
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -118,8 +116,10 @@ script = """
             return response.json();
         })
         .then(data => {
-            document.getElementById("totalStr").innerHTML = "Total marks so far: "+data.curMarks+"/30";
-            document.getElementById("markStr").innerHTML = "Marks for this question: "+data.curMarksQ+"/3";
+            document.getElementById(
+                "totalStr").innerHTML = "Total marks so far: "+data.curMarks+"/30";
+            document.getElementById(
+                "markStr").innerHTML = "Marks for this question: "+data.curMarksQ+"/3";
             alert(data.message);
         })
         .catch(error => {
@@ -308,7 +308,7 @@ def sendRequestToQbServer(request, httpd):
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         print("\033[1;32mConnecting to QB server...\n\033[0m")
-        s.connect((QB_SERVER_IP_ADDRESS, QB_SERVER_PORT))
+        s.connect((qbServerIpAddress, qbServerPort))
         print("\033[1;32mConnected established with QB server...\n\033[0m")
         # Take the request string and split it
         if (request.split()[1] == 'requestQuestions'):
@@ -489,8 +489,8 @@ def serveTest(httpd, username):
         # Fill in placeholders in HTML document
         print(str(questionNum))
 
-        filled_doc = testpage % (fullName, username, curMarks, marksForIndividualQuestion,
-                                 questionNum, question, options_html)
+        filled_doc = testpage % (fullName, username, curMarks,
+                                 marksForIndividualQuestion, questionNum, question, options_html)
 
         filled_doc = filled_doc + (script % (questionNum, curAttempt))
 
@@ -499,7 +499,7 @@ def serveTest(httpd, username):
 
     elif (current_question['multiple'] == False):
 
-        # Add textbox for programming question which allows tabs
+        # Adds textbox for programming question, textbox allows tabs
         programming_html = """
             <form>
             <div>
@@ -522,7 +522,6 @@ def serveTest(httpd, username):
             </script>"""
 
         # Fill in placeholders in HTML document
-        # FIXME: needs extra format specifiers in test.html
         filled_doc = testpage % (fullName, username, curMarks, marksForIndividualQuestion,
                                  questionNum, question, programming_html)
         filled_doc = filled_doc + (script % (questionNum, curAttempt))
@@ -778,15 +777,41 @@ class TestManager(BaseHTTPRequestHandler):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('QB_SERVER_IP_ADDRESS',
+                        help='the IP address of the QB server')
+    parser.add_argument('QB_SERVER_PORT', type=int,
+                        help='the port of the QB server')
+    parser.add_argument('TM_SERVER_IP_ADDRESS',
+                        help='the IP address of the TM server')
+    parser.add_argument('TM_SERVER_PORT', type=int,
+                        help='the port of the TM server')
+
+    args = parser.parse_args()
+
+    qbServerIpAddress = args.QB_SERVER_IP_ADDRESS
+    qbServerPort = args.QB_SERVER_PORT
+    tmServerIpAddress = args.TM_SERVER_IP_ADDRESS
+    tmServerPort = args.TM_SERVER_PORT
     try:
         print("\033[1;32m\nYour IP address: " +
-              str(TM_SERVER_IP_ADDRESS) + "\n\033[0m")
-        print("\033[1;32mTM Your port: " + str(TM_SERVER_PORT) + "\n\033[0m")
+              str(tmServerIpAddress) + "\n\033[0m")
+        print("\033[1;32mTM Your port: " + str(tmServerPort) + "\n\033[0m")
         print("\033[1;32mTM Server Starting...\n\033[0m")
-        server_address = (TM_SERVER_IP_ADDRESS, TM_SERVER_PORT)
+        server_address = (tmServerIpAddress, tmServerPort)
         httpd = HTTPServer(server_address, TestManager)
-        print("\033[1;32mTM Server is running\n\033[0m")
-        httpd.serve_forever()
+        # Set the timeout value in seconds
+        server_thread = threading.Thread(target=httpd.serve_forever)
+        server_thread.start()
+
+        timeout = 10
+        # Wait for the specified timeout period
+        server_thread.join(timeout)
+
+        # If the thread is still alive, stop the server and print a timeout message
+        if server_thread.is_alive():
+            httpd.shutdown()
+            print("\033[1;31mTM Server timed out\n\033[0m")
 
     except KeyboardInterrupt:
         print("\n\033[1;31mTM server is terminating...\033[0m\n")

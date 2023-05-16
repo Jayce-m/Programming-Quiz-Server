@@ -395,60 +395,99 @@ public class QuestionBank {
         }
     }
 
+    public static void usage() {
+        System.out.println("\033[1;31m\nError: Invalid arguments, please add your IP address/Port\033[0m\n");
+        System.out.println("\033[1;31mUsage: java QuestionBank.java <IP Address> [Port]\033[0m\n");
+        System.exit(1);
+    }
+
     public static void main(String[] args) throws Exception {
+        
+        String ipAddress = "";
+
+        // Set the timeout for the server to 10 seconds
+        int timeout = 10000;
+
+        // Program will use port 8000 by default unless specified otherwise
+        int port = 8000;
+
+        // Check if the user has specified an IP address and port
+        // If not, print usage and exit
+        if (args.length == 1) {
+            ipAddress = args[0];
+        } else if (args.length == 2) {
+            ipAddress = args[0];
+            port = Integer.parseInt(args[1]);   
+        } else {
+            usage();
+        }
 
 
-
-        // get the address of the host and set a port to commmunicate on
-        InetAddress address = InetAddress.getLocalHost();
-        int port = 8050;
+        // Get the address of the machine
+        InetAddress address = InetAddress.getByName(ipAddress);
         System.out.println("\n\033[1;32mYour address: " + address + "\033[0m\n");
         System.out.println("\033[1;32mYour port: " + port + "\033[0m\n");
 
-        // Create a ServerSocket to communicate with TM
-        @SuppressWarnings("resource")
-        ServerSocket serverSocket = new ServerSocket(port, 50, address);
-        System.out.println("\033[1;32mServer Started...\033[0m\n");
-
-        while (true) {
-
-            // Wait for client to connect and create a Socket object when client connects
-            Socket clientSocket = serverSocket.accept();
-            System.out.println("\033[1;34mClient connected: " + clientSocket.getInetAddress() + "\033[0m\n");
-
-            // String to store the request from the TM
-            String request = "";
-
-            // Read in client's request
-            InputStream inputStream = clientSocket.getInputStream();
-            byte[] buffer = new byte[4096];
-            int length = inputStream.read(buffer);
-            request = new String(buffer, 0, length);
-            System.out.println("\033[1;34mRequest received: " + request + "\033[0m\n");
+        // Try to create a server socket with the specified port and address
+        // If the port is already in use, print error and exit
+        try (ServerSocket serverSocket = new ServerSocket(port, 50, address)){
             
-            // If the TM is terminated the QB terminates as well
-            if (request.equals("close the QB server")) {
-                break;
-            }
+            // Set the timeout for the server
+            serverSocket.setSoTimeout(timeout);
+            System.out.println("\033[1;32mServer Started...\033[0m\n");
 
-            // Create a copy of the request variable
-            String requestCopy = new String(request);
-
-            // Create a thread to handle the request
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        requestHandler(requestCopy, clientSocket);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+            while (true) {
+    
+                try {
+                    // Accept a client connection
+                    Socket clientSocket = serverSocket.accept();
+                    System.out.println("\033[1;34mClient connected: " + clientSocket.getInetAddress() + "\033[0m\n");
+        
+                    // String to store the request from the TM
+                    String request = "";
+        
+                    // Read in client's request
+                    InputStream inputStream = clientSocket.getInputStream();
+                    byte[] buffer = new byte[4096];
+                    int length = inputStream.read(buffer);
+                    request = new String(buffer, 0, length);
+                    System.out.println("\033[1;34mRequest received: " + request + "\033[0m\n");
+                    
+                    // If the TM is terminated the QB terminates as well
+                    if (request.equals("close the QB server")) {
+                        System.out.println("\033[1;31mServer Closed\033[0m\n");
+                        serverSocket.close();
+                        break;
                     }
+        
+                    // Create a copy of the request variable
+                    String requestCopy = new String(request);
+        
+                    // Create a thread to handle the request
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                requestHandler(requestCopy, clientSocket);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    
+                    thread.start();
+                    
+                } catch (SocketTimeoutException e) {
+                    System.out.println("\033[1;31mServer timed out\033[0m\n");
+                    serverSocket.close();
+                    System.exit(1);
                 }
-            });
-            thread.start();
-
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
         }
-        System.out.println("\033[1;31mServer Closed\033[0m\n");
+
     }
 
 }
