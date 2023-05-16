@@ -1,3 +1,8 @@
+// Student ID: 22751096 | Student Name: Jalil Inayat-Hussain | Contribution: 25%
+// Student ID: 15204630 | Student Name: Cormac Larkin | Contribution: 25%
+// Student ID: 15113005 | Student Name: Killian McCarthy | Contribution: 25%
+// Student ID: 15202398 | Student Name: Diarmuid Murphy | Contribution: 25%
+
 import java.io.*;
 import java.net.*;
 import java.util.Arrays;
@@ -14,6 +19,8 @@ import java.nio.file.Paths;
 // TODO
 // 1. Change the program to send the questions without the answer
 // 2. Clean up the code and right comments
+// 3. Add language to MCQ request so that the Java Object can mark java questions etc.....
+// 4. Remove programming questions that require input from the bank of questions - this is a limitation of our program
 
 
 public class QuestionBank {
@@ -233,23 +240,31 @@ public class QuestionBank {
         }
 
         String response = userId + " " + questionId + " " + marks + " " + message;
-
+        System.out.println(response);
         return response;
     }
 
     public synchronized String runPythonCode(String code) throws IOException {
-        // Ensure you have python installed and can run python using the python3 command
+        // Ensure you have python3 installed and can run python using the python3 command
         // as seen below
-        ProcessBuilder pb = new ProcessBuilder("python3", "-c", code);
-        Process process = pb.start();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        StringBuilder builder = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            builder.append(line);
-            builder.append(System.getProperty("line.separator"));
+        try {
+            code = code.replace("\\n", "\n").replace("\\t", "\t").replace("\\", "\"");
+
+            ProcessBuilder pb = new ProcessBuilder("python3", "-c", code);
+            Process process = pb.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+                builder.append(System.getProperty("line.separator"));
+            }
+            return builder.toString();
+            
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.err.println("Error: " + e.getMessage());
+            return null;
         }
-        return builder.toString();
     }
 
     public synchronized String runJavaCode(String code) throws Exception {
@@ -298,101 +313,179 @@ public class QuestionBank {
 
             return output;
         } catch (ArrayIndexOutOfBoundsException e) {
+            System.err.println("Error: " + e.getMessage());
             return null;
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static synchronized void requestHandler(String request, Socket clientSocket) throws Exception {
+
         // Create an instant of QB to create and send questions to the TM
-        // Create an instance of QB to receive
+        // Create an instance of QB to mark Java programming questions
+        // Create an instance of QB to mark Python programming questions
+
         QuestionBank questionSender = new QuestionBank();
-        QuestionBank questionMarker = new QuestionBank();        
-        // String filePath = "test.txt";
-        // byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
-        // String co = new String(fileBytes, StandardCharsets.UTF_8);
+        QuestionBank javaQuestionMarker = new QuestionBank();       
+        QuestionBank pythonQuestionMarker = new QuestionBank();
 
-        // String[] ans = questionMarker.markProgrammingQuestion("jalil", "14", co, "1", "Java");
-        // System.out.println(Arrays.toString(ans));
+        // THE SYNTAX BELOW SPECIFIES THE AGGREED REQUEST SYNTAX THAT THE TM MUST SEND
 
-        // get the address of the host and set a port to commmunicate on
-        InetAddress address = InetAddress.getLocalHost();
-        int port = 8050;
-        System.out.println("\n\033[32mYour address: " + address + "\033[0m\n");
-        System.out.println("\033[32mYour port: " + port + "\033[0m\n");
+        // For a request for questions the request should be in the format:
+        // "<UserID> requestQuestions"
 
-        // Create a ServerSocket to communicate with TM
-        @SuppressWarnings("resource")
-        ServerSocket serverSocket = new ServerSocket(port, 50, address);
-        System.out.println("\033[32mServer Started...\033[0m\n");
+        // For a request for MCQ to be marked the request should be in the format:
+        // "<UserID> requestMCQMarking <QuestionID> <attempts> <answer>"
 
-        while (true) {
+        // For a request for programming question to be marked the request should be in the format:
+        // "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
+        
+        // Variables to store the request information
+        String[] requestArray = request.split(" ", 5);
+        String userID = requestArray[0];
+        String requestType = requestArray[1];
+        String questionID;
+        String attempts;
+        String language;
+        String code;
 
-            // Wait for client to connect and create a Socket object when client connects
-            Socket clientSocket = serverSocket.accept();
-            System.out.println("\033[34mClient connected: " + clientSocket.getInetAddress() + "\033[0m\n");
+        switch (requestType) {
+            case "requestQuestions":
+                System.out.println("\033[1;34mQuestions requested\033[0m\n");
+                questionSender.generateQuestions(userID);
+                questionSender.sendQuestionsToTM(clientSocket, userID);
+                clientSocket.close();
+                break;
+            case "requestMCQMarking":
 
-            String request = "";
+                questionID = requestArray[2];
+                attempts = requestArray[3];
+                String answer = requestArray[4];
+                System.out.println("\033[1;34mMCQ marking requested\033[0m\n");
+                String[] output = javaQuestionMarker.markMultipleChoiceQuestion(userID, questionID, answer, attempts);
 
-            // Read in client's request
+                if (output[3] == "Correct!") {
+                    questionSender.sendMCQmarkingToTM(clientSocket, true, output[0], output[1], output[2],
+                            output[3]);
+                } else {
+                    questionSender.sendMCQmarkingToTM(clientSocket, false, output[0], output[1], output[2],
+                            output[3]);
+                }
+                clientSocket.close();
+                break;
+            case "requestPQMarking":
+                System.out.println("\033[1;34mProgramming question marking requested\033[0m\n");
+                requestArray = request.split(" ", 6);
+                System.out.println(Arrays.toString(requestArray));
+                questionID = requestArray[2];
+                attempts = requestArray[3];
+                language = requestArray[4];
+                code = requestArray[5];
+
+                if (language.equals("Java")) {
+                    String response = javaQuestionMarker.markProgrammingQuestion(userID, questionID, code, attempts, language);;
+                    javaQuestionMarker.sendPQMarkingToTM(clientSocket, response);
+                } else if (language.equals("Python")) {
+                    String response = pythonQuestionMarker.markProgrammingQuestion(userID, questionID, code, attempts, language);
+                    pythonQuestionMarker.sendPQMarkingToTM(clientSocket, response);
+                }
+                clientSocket.close();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static void usage() {
+        System.out.println("\033[1;31m\nError: Invalid arguments, please add your IP address/Port\033[0m\n");
+        System.out.println("\033[1;31mUsage: java QuestionBank.java <IP Address> [Port]\033[0m\n");
+        System.exit(1);
+    }
+
+    public static void main(String[] args) throws Exception {
+        
+        String ipAddress = "";
+
+        // Set the timeout for the server to 10 seconds
+        int timeout = 10000;
+
+        // Program will use port 8000 by default unless specified otherwise
+        int port = 8000;
+
+        // Check if the user has specified an IP address and port
+        // If not, print usage and exit
+        if (args.length == 1) {
+            ipAddress = args[0];
+        } else if (args.length == 2) {
+            ipAddress = args[0];
+            port = Integer.parseInt(args[1]);   
+        } else {
+            usage();
+        }
+
+
+        // Get the address of the machine
+        InetAddress address = InetAddress.getByName(ipAddress);
+        System.out.println("\n\033[1;32mYour address: " + address + "\033[0m\n");
+        System.out.println("\033[1;32mYour port: " + port + "\033[0m\n");
+
+        // Try to create a server socket with the specified port and address
+        // If the port is already in use, print error and exit
+        try (ServerSocket serverSocket = new ServerSocket(port, 50, address)){
             
-            InputStream inputStream = clientSocket.getInputStream();
-            byte[] buffer = new byte[4096];
-            int length = inputStream.read(buffer);
-            request = new String(buffer, 0, length);
-            System.out.println("\033[34mRequest received: " + request + "\033[0m\n");
-            
-            
-            // For a request for questions the request should be in the format:
-            // "<UserID> requestQuestions"
+            // Set the timeout for the server
+            serverSocket.setSoTimeout(timeout);
+            System.out.println("\033[1;32mServer Started...\033[0m\n");
 
-            // For a request for MCQ to be marked the request should be in the format:
-            // "<UserID> requestMCQMarking <QuestionID> <attempts> <answer>"
-
-            // For a request for programming question to be marked the request should be in
-            // the format:
-            // "<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
-            String[] requestArray = request.split(" ", 5);
-            String userID = requestArray[0];
-            String requestType = requestArray[1];
-            String questionID;
-            String attempts;
-
-            switch (requestType) {
-                case "requestQuestions":
-                    System.out.println("\033[34mQuestions requested\033[0m\n");
-                    questionSender.generateQuestions(userID);
-                    questionSender.sendQuestionsToTM(clientSocket, userID);
-                    clientSocket.close();
-                    break;
-                case "requestMCQMarking":
-                    questionID = requestArray[2];
-                    attempts = requestArray[3];
-                    String answer = requestArray[4];
-                    System.out.println("\033[34mMCQ marking requested\033[0m\n");
-                    String[] output = questionMarker.markMultipleChoiceQuestion(userID, questionID, answer, attempts);
-                    if (output[3] == "Correct!") {
-                        questionSender.sendMCQmarkingToTM(clientSocket, true, output[0], output[1], output[2],
-                                output[3]);
-                    } else {
-                        questionSender.sendMCQmarkingToTM(clientSocket, false, output[0], output[1], output[2],
-                                output[3]);
+            while (true) {
+    
+                try {
+                    // Accept a client connection
+                    Socket clientSocket = serverSocket.accept();
+                    System.out.println("\033[1;34mClient connected: " + clientSocket.getInetAddress() + "\033[0m\n");
+        
+                    // String to store the request from the TM
+                    String request = "";
+        
+                    // Read in client's request
+                    InputStream inputStream = clientSocket.getInputStream();
+                    byte[] buffer = new byte[4096];
+                    int length = inputStream.read(buffer);
+                    request = new String(buffer, 0, length);
+                    System.out.println("\033[1;34mRequest received: " + request + "\033[0m\n");
+                    
+                    // If the TM is terminated the QB terminates as well
+                    if (request.equals("close the QB server")) {
+                        System.out.println("\033[1;31mServer Closed\033[0m\n");
+                        serverSocket.close();
+                        break;
                     }
-                    break;
-                case "requestPQMarking":
-                    requestArray = request.split(" ", 6);
-                    System.out.println(Arrays.toString(requestArray));
-                    questionID = requestArray[2];
-                    attempts = requestArray[3];
-                    String language = requestArray[4];
-                    String code = requestArray[5];
-                    //"<UserID> requestPQMarking <QuestionID> <attempts> <language> <code>"
-
-                    String response = questionMarker.markProgrammingQuestion(userID, questionID, code, attempts, language);
-                    questionMarker.sendPQMarkingToTM(clientSocket, response);
-                    break;
-                default:
-                    break;
+        
+                    // Create a copy of the request variable
+                    String requestCopy = new String(request);
+        
+                    // Create a thread to handle the request
+                    Thread thread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                requestHandler(requestCopy, clientSocket);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    
+                    thread.start();
+                    
+                } catch (SocketTimeoutException e) {
+                    System.out.println("\033[1;31mServer timed out\033[0m\n");
+                    serverSocket.close();
+                    System.exit(1);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
         }
 
     }
