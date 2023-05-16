@@ -1,7 +1,9 @@
-// Student ID: 22751096 | Student Name: Jalil Inayat-Hussain | Contribution: 25%
-// Student ID: 15204630 | Student Name: Cormac Larkin | Contribution: 25%
-// Student ID: 15113005 | Student Name: Killian McCarthy | Contribution: 25%
-// Student ID: 15202398 | Student Name: Diarmuid Murphy | Contribution: 25%
+/**
+ * Student ID: 22751096 | Student Name: Jalil Inayat-Hussain | Contribution: 25%
+ * Student ID: 23283528 | Student Name: Jason Millman | Contribution: 25%
+ * Student ID: 22717638 | Student Name: Janodi Weerasinghe | Contribution: 25%
+ * Student ID: 23098648 | Student Name: Elijah Taylor | Contribution: 25%
+**/
 
 import java.io.*;
 import java.net.*;

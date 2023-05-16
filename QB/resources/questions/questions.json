@@ -201,8 +201,8 @@
     "id": 25,
     "language": "Python",
     "multiple": false,
-    "question": "Create a Python function called reverse_string that takes a string as input and returns the string in reverse order. Call this function from your main program to get the result.",
-    "answer": "def reverse_string(input_string):\n return input_string[::-1]\n\nif name == 'main':\n my_string = input('Enter a string: ')\n reversed_string = reverse_string(my_string)\n print(reversed_string)"
+    "question": "Write a Python program to generate and print the first 10 Fibonacci numbers.",
+    "answer": "fibonacci_sequence = [0, 1]\nwhile len(fibonacci_sequence) < 10:\n next_num = fibonacci_sequence[-1] + fibonacci_sequence[-2]\n fibonacci_sequence.append(next_num)\nprint(fibonacci_sequence)"
   },
   {
     "id": 26,
@@ -240,8 +240,8 @@
     "id": 30,
     "language": "Python",
     "multiple": false,
-    "question": "Create a Python function called multiply_list that takes a list of integers as input and returns the product of all the elements in the list. Call this function from your main program to get the result.",
-    "answer": "def multiply_list(numbers):\n result = 1\n for num in numbers:\n result *= num\n return result\n\nif name == 'main':\n my_list = [2, 3, 4, 5]\n product = multiply_list(my_list)\n print(product)"
+    "question": "Write a Python program to check if a given number is prime.",
+    "answer": "def is_prime(number):\n    if number <= 1:\n        return False\n    for i in range(2, int(number ** 0.5) + 1):\n        if number % i == 0:\n            return False\n    return True\n\nnum = 17\nif is_prime(num):\n    print(f'{num} is a prime number.')\nelse:\n    print(f'{num} is not a prime number.')"
   },
   {
     "id": 31,
