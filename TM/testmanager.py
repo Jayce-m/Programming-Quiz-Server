@@ -16,9 +16,9 @@ import os
 
 # SET THESE TO THE CORRECT VALUES FOR YOUR SYSTEM AND FOR THE SYSTEM THE QUESTION BANK IS RUNNING ON
 # TO DETERMINE QB SERVER IP ADDRESS AND PORT RUN THE QB SERVER AND THE IP AND PORT WILL BE PRINTED TO THE TERMINAL
-QB_SERVER_IP_ADDRESS = '127.0.0.1'
+QB_SERVER_IP_ADDRESS = '10.135.149.248'
 QB_SERVER_PORT = 8050
-TM_SERVER_IP_ADDRESS = '127.0.0.1'
+TM_SERVER_IP_ADDRESS = ''
 TM_SERVER_PORT = 8080
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -118,7 +118,9 @@ script = """
             return response.json();
         })
         .then(data => {
-            alert(data.message); // display the message in the alert
+            document.getElementById("totalStr").innerHTML = "Total marks so far: "+data.curMarks+"/30";
+            document.getElementById("markStr").innerHTML = "Marks for this question: "+data.curMarksQ+"/3";
+            alert(data.message);
         })
         .catch(error => {
             console.error('Error sending POST request:', error);
@@ -190,7 +192,7 @@ testpage = """
                 <a class="nav-link" id="totalStr">Total marks so far: %s/30</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="markStr>Marks for this question: %s/3</a>
+                <a class="nav-link" id="markStr">Marks for this question: %s/3</a>
             </li>
             </ul>
         </div>
@@ -347,13 +349,14 @@ def sendRequestToQbServer(request, httpd):
                         break
             with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
                 if answer.find("Incorrect") != -1:
-                    httpd.send_response_only(403)
-                    httpd.send_header('Content-type', 'application/json')
-                    httpd.end_headers()
-                    response = {'message': answer}
                     httpd.wfile.write(json.dumps(response).encode())
                     data = json.load(json_file)
                     data[username]['attempts'][str(questionNum+1)] += 1
+                    httpd.send_response_only(403)
+                    httpd.send_header('Content-type', 'application/json')
+                    httpd.end_headers()
+                    response = {'message': answer, 'curMarks': data[username]['marks'],'curMarksQ': 0}
+                    httpd.wfile.write(json.dumps(response).encode())
                     if (data[username]['attempts'][str(questionNum+1)] == 4):
                         print("show answer")
                     with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
@@ -370,7 +373,7 @@ def sendRequestToQbServer(request, httpd):
                     httpd.send_response_only(200)
                     httpd.send_header('Content-type', 'application/json')
                     httpd.end_headers()
-                    response = {'message': answer}
+                    response = {'message': answer, 'curMarks': data[username]['marks'],'curMarksQ': int(marksReceived)}
                     httpd.wfile.write(json.dumps(response).encode())
                     return
             s.close()
@@ -404,16 +407,15 @@ def sendRequestToQbServer(request, httpd):
             with open(os.path.join(basedir, 'storage/users/users.json')) as json_file:
                 # If the answer is incorrect
                 if answer.find("Incorrect") != -1:
-                    # Send the message generated from the QuestionBank server to the user
-                    httpd.send_response_only(403)
-                    httpd.send_header('Content-type', 'application/json')
-                    httpd.end_headers()
-                    response = {'message': answer}
-                    httpd.wfile.write(json.dumps(response).encode())
                     data = json.load(json_file)
                     # Increment the number of attempts for the question
                     data[username]['attempts'][str(questionNum+1)] += 1
                     # Save the information
+                    httpd.send_response_only(403)
+                    httpd.send_header('Content-type', 'application/json')
+                    httpd.end_headers()
+                    response = {'message': answer, 'curMarks': data[username]['marks'],'curMarksQ': 0}
+                    httpd.wfile.write(json.dumps(response).encode())
                     with open(os.path.join(basedir, 'storage/users/users.json'), 'w') as outfile:
                         json.dump(data, outfile, indent=4)
                     return
@@ -432,7 +434,7 @@ def sendRequestToQbServer(request, httpd):
                     httpd.send_response_only(200)
                     httpd.send_header('Content-type', 'application/json')
                     httpd.end_headers()
-                    response = {'message': answer}
+                    response = {'message': answer, 'curMarks': data[username]['marks'],'curMarksQ': int(marksReceived)}
                     httpd.wfile.write(json.dumps(response).encode())
                     return
         elif (request == 'close the QB server'):
