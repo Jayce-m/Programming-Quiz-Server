@@ -1,0 +1,79 @@
+[{
+    "id": 34,
+    "language": "Python",
+    "multiple": true,
+    "question": "Which of the following is not a built-in data type in Python?",
+    "options": ["list", "dictionary", "tuple", "stack"],
+    "answer": "stack"
+  },
+  {
+    "id": 35,
+    "language": "Java",
+    "multiple": true,
+    "question": "Which of the following is a correct way to declare a multi-dimensional array in Java?",
+    "options": ["int[][] myArray = {{1,2,3}, {4,5,6}};", "int myArray[][] = {{1,2,3}, {4,5,6}};", "int[] myArray[] = {{1,2,3}, {4,5,6}};", "All of the above"],
+    "answer": "All of the above"
+  },
+  {
+    "id": 36,
+    "language": "Python",
+    "multiple": false,
+    "question": "Write a Python program to sum the first 15 positive integers.",
+    "answer": "n = 15 \nsum_num = (n * (n + 1)) / 2\nprint(sum_num)"
+  },
+  {
+    "id": 37,
+    "language": "Python",
+    "multiple": false,
+    "question": "Generate a Python list of all the even numbers between 4 to 30",
+    "answer": "print(list(range(4, 30, 2)))"
+  },
+  {
+    "id": 38,
+    "language": "Java",
+    "multiple": false,
+    "question": "Write a Java program to compute a specified formula: 4.0 * (1 - (1.0/3) + (1.0/5) - (1.0/7) + (1.0/9) - (1.0/11)).\nYour program should include a class and a main method to run the program.",
+    "answer": "public class Exercise10 {\npublic static void main(String[] args) {\n  double result = 4.0 * (1 - (1.0/3) + (1.0/5) - (1.0/7) + (1.0/9) - (1.0/11));\n System.out.println(result); \n  }\n}" 
+  },
+  {
+    "id": 39,
+    "language": "Python",
+    "multiple": false,
+    "question": "Write a Python program to sum the first 10 positive integers.",
+    "answer": "n = 10 \nsum_num = (n * (n + 1)) / 2\nprint(sum_num)"
+  },
+  {
+    "id": 40,
+    "language": "Java",
+    "multiple": false,
+    "question": "Write a Java program to print the results of the following operation: 5 + 15 / 3 * 2 - 8 % 3/ 8.\nYour program should include a class and a main method to run the program.",
+    "answer": "public class Exercise4 {\npublic static void main(String[] args) {\n   System.out.println(5 + 15 / 3 * 2 - 8 % 3);\n}\n}"
+  },
+  {
+    "id": 41,
+    "language": "Java",
+    "multiple": false,
+    "question": "Write a Java program to print the results of the following operation: (55+9) % 9.\nYour program should include a class and a main method to run the program.",
+    "answer": "public class Exercise4 {\npublic static void main(String[] args) {\n   System.out.println(5 + 15 / 3 * 2 - 8 % 3);\n}\n}"
+  },
+  {
+    "id": 42,
+    "language": "Java",
+    "multiple": false,
+    "question": "Write a Java program to print the results of the following operation: 20 + -3*5 / 8.\nYour program should include a class and a main method to run the program.",
+    "answer": "public class Exercise4 {\npublic static void main(String[] args) {\n   System.out.println(20 + -3*5 / 8);\n}\n}"
+  },
+  {
+    "id": 43,
+    "language": "Java",
+    "multiple": false,
+    "Question": "Create a Java program that displays the first 30 even numbers. Your program should include a class and a main method to run the program.",
+    "answer": "public class PrintEven Numbers {\n  public static void main(String[] args) {\n   for (int i = 2; i <=60; i += 2) {\n     System.out.println(i);\n    }\n }\n}"
+  },
+  {
+    "id": 44,
+    "language": "Java",
+    "multiple": false,
+    "Question": "Create a Java program that displays the first 25 even numbers. Your program should include a class and a main method to run the program.",
+    "answer": "public class PrintEven Numbers {\n  public static void main(String[] args) {\n   for (int i = 2; i <=50; i += 2) {\n     System.out.println(i);\n    }\n }\n}"
+  }]

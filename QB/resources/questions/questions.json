@@ -104,14 +104,14 @@
     "id": 13,
     "language": "Python",
     "multiple": false,
-    "question": "Create a Python program that displays integers ranging from 1 to 10, including both 1 and 10. Your program should use a class and include a main method to run the program.",
+    "question": "Create a Python program that displays integers ranging from 1 to 10, including both 1 and 10.",
     "answer": "for i in range(1, 11):\n\tprint(i)"
   },
   {
     "id": 14,
     "language": "Java",
     "multiple": false,
-    "question": "Write a Java program to print \"Hello, World!\" to the console. Your program should use a class and include a main method to run the program.",
+    "question": "Write a Java program to print \"Hello, World!\" to the console.\nYour program should include a class and a main method to run the program.",
     "answer": "public class HelloWorld {\n  public static void main(String[] args) {\n    System.out.println(\"Hello, World!\");\n  }\n}"
   },
   {
@@ -125,7 +125,7 @@
     "id": 16,
     "language": "Java",
     "multiple": false,
-    "question": "Create a Java program that displays the first 10 even numbers. Your program should include a class and a main method to run the program.",
+    "question": "Create a Java program that displays the first 10 even numbers.\nYour program should include a class and a main method to run the program.",
     "answer": "public class PrintEven Numbers {\n  public static void main(String[] args) {\n   for (int i = 2; i <=20; i += 2) {\n     System.out.println(i);\n    }\n }\n}"
   },
   {
@@ -238,10 +238,10 @@
   },
   {
     "id": 30,
-    "language": "Python",
+    "language": "Java",
     "multiple": false,
-    "question": "Write a Python program to check if a given number is prime.",
-    "answer": "def is_prime(number):\n    if number <= 1:\n        return False\n    for i in range(2, int(number ** 0.5) + 1):\n        if number % i == 0:\n            return False\n    return True\n\nnum = 17\nif is_prime(num):\n    print(f'{num} is a prime number.')\nelse:\n    print(f'{num} is not a prime number.')"
+    "Question": "Create a Java program that displays the first 7 even numbers. Your program should include a class and a main method to run the program.",
+    "answer": "public class PrintEven Numbers {\n  public static void main(String[] args) {\n   for (int i = 2; i <=14; i += 2) {\n     System.out.println(i);\n    }\n }\n}"
   },
   {
     "id": 31,
@@ -282,5 +282,68 @@
     "question": "Which of the following is a correct way to declare a multi-dimensional array in Java?",
     "options": ["int[][] myArray = {{1,2,3}, {4,5,6}};", "int myArray[][] = {{1,2,3}, {4,5,6}};", "int[] myArray[] = {{1,2,3}, {4,5,6}};", "All of the above"],
     "answer": "All of the above"
+  },
+  {
+    "id": 36,
+    "language": "Python",
+    "multiple": false,
+    "question": "Write a Python program to sum the first 15 positive integers.",
+    "answer": "n = 15 \nsum_num = (n * (n + 1)) / 2\nprint(sum_num)"
+  },
+  {
+    "id": 37,
+    "language": "Python",
+    "multiple": false,
+    "question": "Generate a Python list of all the even numbers between 4 to 30",
+    "answer": "print(list(range(4, 30, 2)))"
+  },
+  {
+    "id": 38,
+    "language": "Java",
+    "multiple": false,
+    "question": "Write a Java program to compute a specified formula: 4.0 * (1 - (1.0/3) + (1.0/5) - (1.0/7) + (1.0/9) - (1.0/11)).\nYour program should include a class and a main method to run the program.",
+    "answer": "public class Exercise10 {\npublic static void main(String[] args) {\n  double result = 4.0 * (1 - (1.0/3) + (1.0/5) - (1.0/7) + (1.0/9) - (1.0/11));\n System.out.println(result); \n  }\n}" 
+  },
+  {
+    "id": 39,
+    "language": "Python",
+    "multiple": false,
+    "question": "Write a Python program to sum the first 10 positive integers.",
+    "answer": "n = 10 \nsum_num = (n * (n + 1)) / 2\nprint(sum_num)"
+  },
+  {
+    "id": 40,
+    "language": "Java",
+    "multiple": false,
+    "question": "Write a Java program to print the results of the following operation: 5 + 15 / 3 * 2 - 8 % 3/ 8.\nYour program should include a class and a main method to run the program.",
+    "answer": "public class Exercise4 {\npublic static void main(String[] args) {\n   System.out.println(5 + 15 / 3 * 2 - 8 % 3);\n}\n}"
+  },
+  {
+    "id": 41,
+    "language": "Java",
+    "multiple": false,
+    "question": "Write a Java program to print the results of the following operation: (55+9) % 9.\nYour program should include a class and a main method to run the program.",
+    "answer": "public class Exercise4 {\npublic static void main(String[] args) {\n   System.out.println(5 + 15 / 3 * 2 - 8 % 3);\n}\n}"
+  },
+  {
+    "id": 42,
+    "language": "Java",
+    "multiple": false,
+    "question": "Write a Java program to print the results of the following operation: 20 + -3*5 / 8.\nYour program should include a class and a main method to run the program.",
+    "answer": "public class Exercise4 {\npublic static void main(String[] args) {\n   System.out.println(20 + -3*5 / 8);\n}\n}"
+  },
+  {
+    "id": 43,
+    "language": "Java",
+    "multiple": false,
+    "Question": "Create a Java program that displays the first 30 even numbers. Your program should include a class and a main method to run the program.",
+    "answer": "public class PrintEven Numbers {\n  public static void main(String[] args) {\n   for (int i = 2; i <=60; i += 2) {\n     System.out.println(i);\n    }\n }\n}"
+  },
+  {
+    "id": 44,
+    "language": "Java",
+    "multiple": false,
+    "Question": "Create a Java program that displays the first 25 even numbers. Your program should include a class and a main method to run the program.",
+    "answer": "public class PrintEven Numbers {\n  public static void main(String[] args) {\n   for (int i = 2; i <=50; i += 2) {\n     System.out.println(i);\n    }\n }\n}"
   }
 ]
